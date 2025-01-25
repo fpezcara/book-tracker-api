@@ -1,15 +1,15 @@
 require "test_helper"
-require_relative "../../app/services/google_books_service" # Add this line to ensure it's loaded
 
 class GoogleBooksServiceTest < ActiveSupport::TestCase
   def setup
     @query = "harry potter"
     @search_by = "intitle"
+    @api_key = Rails.application.credentials.google_books_api_key
+    @base_url = "https://www.googleapis.com/books/v1/volumes?q="
   end
 
 
   def test_fetch_books_success
-    # Mock the API request
     response_body = {
       "items" => [
         {
@@ -29,10 +29,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
       ]
     }.to_json
 
-    base_url = "https://www.googleapis.com/books/v1/volumes?q="
-    api_key = Rails.application.credentials.google_books_api_key
-
-    stub_request(:get, "#{base_url}#{@search_by}:#{@query}&orderBy=relevance&key=#{api_key}").
+    stub_request(:get, "#{@base_url}#{@search_by}:#{@query}&orderBy=relevance&key=#{@api_key}").
       with(
         headers: {
               "Accept"=>"*/*",
@@ -44,10 +41,15 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
 
     books = GoogleBooksService.fetch_books(@query, @search_by)
 
-    assert_equal response_body, books.to_json
+    assert_equal({ data: JSON.parse(response_body) }, books)
   end
 
-  # test "when param query is passed it fetches it from Google Books API" do
-  #   assert true
-  # end
+  def test_fetch_books_failure
+    stub_request(:get, "#{@base_url}#{@search_by}:#{@query}&orderBy=relevance&key=#{@api_key}")
+      .to_return(status: 500, body: "", headers: {})
+
+    books = GoogleBooksService.fetch_books(@query, @search_by)
+
+    assert_equal({ error: "Request failed with status 500" }, books)
+  end
 end

@@ -11,9 +11,9 @@ class GoogleBooksService
     response = Faraday.get(url)
 
     if response.success?
-      JSON.parse(response.body)
+      { data: JSON.parse(response.body) }
     else
-      raise "Request failed with status #{response.status}"
+      { error: "Request failed with status #{response.status}" }
     end
   end
 
