@@ -61,6 +61,8 @@ group :development, :test do
   gem "webmock", "~> 3.16"
 
   gem "minitest-rails", "~> 8.0.0"
+
+  gem "simplecov", require: false
 end
 
 group :development do
