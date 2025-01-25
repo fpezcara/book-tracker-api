@@ -13,4 +13,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  resources :books, only: %i[create update destroy] do
+    collection do
+      post :search, to: "books#search"
+    end
+  end
 end
