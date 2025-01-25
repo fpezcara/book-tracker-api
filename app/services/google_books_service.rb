@@ -6,11 +6,7 @@ class GoogleBooksService
   BASE_URL = "https://www.googleapis.com/books/v1/volumes?q="
 
   def self.fetch_books(query, search_by)
-    puts "Queryyyy, search_byyyy", query
-
     url = build_url(query, search_by)
-
-    puts "url", url
 
     response = Faraday.get(url)
 
