@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 class Book < ApplicationRecord
-  belongs_to :lists
+  has_and_belongs_to_many :lists
 end

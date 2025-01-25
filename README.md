@@ -4,7 +4,7 @@ This Rails app is the server for [Book Tracker client](https://github.com/fpezca
 
 ## Local development
 
-To run tests:
+#### To run tests:
 ```
 bin/rails test
 ```
@@ -12,4 +12,14 @@ bin/rails test
 or
 ```
 bin/rake
+```
+
+#### To run migration:
+```
+bin/rails db:environment:set RAILS_ENV=development
+```
+
+#### To check migration status:
+```
+bin/rails db:migrate:status
 ```
