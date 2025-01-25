@@ -6,6 +6,17 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
+DATABASE_HOST=${DATABASE_HOST:-localhost}
+DATABASE_USERNAME=${DATABASE_USERNAME:-postgres}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
+DATABASE_NAME=${DATABASE_NAME:-test_db}
+
+# Log environment variables for debugging
+echo "DATABASE_HOST: $DATABASE_HOST"
+echo "DATABASE_USERNAME: $DATABASE_USERNAME"
+echo "DATABASE_PASSWORD: $DATABASE_PASSWORD"
+echo "DATABASE_NAME: $DATABASE_NAME"
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
