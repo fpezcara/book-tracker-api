@@ -4,6 +4,7 @@ class BooksController < ApplicationController
   end
 
   def show
+    "I'm actually working"
     # to get one specific book - is this needed
   end
 
