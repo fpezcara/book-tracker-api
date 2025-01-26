@@ -411,7 +411,6 @@ DEPENDENCIES
   stimulus-rails
   thruster
   turbo-rails
-  tzinfo-data
   web-console
   webmock (~> 3.16)
 
