@@ -33,4 +33,4 @@ queue:
 
 cache:
   <<: *default
-  database: book_tracker_cache_production
+  database: book_tracker_production
