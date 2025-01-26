@@ -26,3 +26,7 @@ production:
 cable:
   <<: *default
   database: book_tracker_production
+
+queue:
+  <<: *default
+  database: book_tracker_production
