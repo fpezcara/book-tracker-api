@@ -22,3 +22,7 @@ test:
 production:
   <<: *default
   database: book_tracker_production
+
+cable:
+  <<: *default
+  database: book_tracker_production
