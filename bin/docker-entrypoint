@@ -15,7 +15,7 @@ DATABASE_NAME=${DATABASE_NAME:-test_db}
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 
-  ./bin/rails admin:create RAILS_ENV=production
+  # ./bin/rails admin:create RAILS_ENV=production
 fi
 
 exec "${@}"
