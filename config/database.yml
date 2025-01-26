@@ -30,3 +30,7 @@ cable:
 queue:
   <<: *default
   database: book_tracker_production
+
+cache:
+  <<: *default
+  database: book_tracker_cache_production
