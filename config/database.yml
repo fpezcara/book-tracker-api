@@ -34,3 +34,4 @@ queue:
 cache:
   <<: *default
   database: book_tracker_production
+  migrations_paths: db/cache_migrate
