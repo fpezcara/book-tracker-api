@@ -63,6 +63,8 @@ group :development, :test do
   gem "minitest-rails", "~> 8.0.0"
 
   gem "simplecov", require: false
+
+  gem "factory_bot_rails"
 end
 
 group :development do
