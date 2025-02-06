@@ -58,7 +58,7 @@ group :development, :test do
   gem "rubocop"
   gem "rubocop-minitest"
 
-  gem "webmock", "~> 3.16"
+  gem "webmock", "~> 3.25"
 
   gem "minitest-rails", "~> 8.0.0"
 
