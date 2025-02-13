@@ -18,4 +18,6 @@ Rails.application.routes.draw do
       post :search, to: "books#search"
     end
   end
+
+  resources :lists, only: %i[create update destroy show]
 end
