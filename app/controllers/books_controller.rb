@@ -19,4 +19,10 @@ class BooksController < ApplicationController
   def destroy
     # to delete a book
   end
+
+  private
+
+    def book_params
+      # TODO: how can I do this if the params will come from the google api
+    end
 end
