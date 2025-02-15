@@ -10,20 +10,27 @@ class ListTest < ActiveSupport::TestCase
     assert @list.valid?
   end
 
+  test "invalid without a name" do
+    @list.name = nil
+
+    assert_not @list.valid?, "Saved the list without a name"
+    assert_not_nil @list.errors[:name], "No validation error for title present"
+  end
+
   test "should have many books" do
     assert_respond_to @list, :books
   end
 
-  test "should add list to book" do
-    @book.lists << @list
+  test "should add book to list" do
+    @list.books << @book
 
-    assert_includes @book.lists, @list, "Book does not have the associated list"
+    assert_includes @list.books, @book, "List does not have the associated book"
   end
 
-  test "should remove list from book" do
-    @book.lists << @list
-    @book.lists.delete(@list)
+  test "should remove book from list" do
+    @list.books << @book
+    @list.books.delete(@book)
 
-    assert_not_includes @book.lists, @list, "Book still has the associated list"
+    assert_not_includes @list.books, @book, "List still has the associated book"
   end
 end
