@@ -17,6 +17,14 @@ class ListTest < ActiveSupport::TestCase
     assert_not_nil @list.errors[:name], "No validation error for title present"
   end
 
+  test "name must be unique" do
+    @list.save!
+    duplicated_list = FactoryBot.build(:list, name: @list.name)
+
+    assert_not duplicated_list.valid?, "Saved the list with duplicate name"
+    assert_not_nil duplicated_list.errors[:name], "No validation error for unique name present"
+  end
+
   test "should have many books" do
     assert_respond_to @list, :books
   end
