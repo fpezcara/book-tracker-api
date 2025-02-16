@@ -23,3 +23,8 @@ bin/rails db:environment:set RAILS_ENV=development
 ```
 bin/rails db:migrate:status
 ```
+
+### To start the server:
+```
+bin/rails server
+```
