@@ -11,7 +11,8 @@ class BooksController < ApplicationController
   end
 
   def create
-    @book = Book.create(book_params)
+    # todo: test below the part where it doesn't get created if it already exists
+    @book = Book.find_by_title(params[:title]) || Book.create(book_params)
 
     if @book.save!
       render json: @book, status: :created

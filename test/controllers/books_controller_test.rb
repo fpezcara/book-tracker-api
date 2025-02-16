@@ -3,7 +3,7 @@ require "test_helper"
 class BooksControllerTest < ActionController::TestCase
   def setup
     @book_params = { title: "Test Title", authors: [ "Test author" ], published_date: "2025-02-16",
-isbn: "12345678901234", page_count: 235, cover_image: "fake-image.url" }
+isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
   end
 
   class IndexActionTest < BooksControllerTest
@@ -16,11 +16,12 @@ isbn: "12345678901234", page_count: 235, cover_image: "fake-image.url" }
 
     test "GET /books returns all books when books exist" do
       book = Book.create!(@book_params)
+      another_book = Book.create!(title: "Another title", isbn: "1234567860120")
 
       get :index
 
       assert_response :success
-      assert_equal Book.all, [ book ]
+      assert_equal Book.all, [ book, another_book ]
     end
   end
 
@@ -73,12 +74,12 @@ isbn: "12345678901234", page_count: 235, cover_image: "fake-image.url" }
     end
 
     test "POST /books with only required params creates a book" do
-      post :create, params: { book: { title: "Test Title", isbn: "12345678901234" } }
+      post :create, params: { book: { title: "Test Title", isbn: "1234567891234" } }
 
       assert_response :created
       created_book = Book.last
       assert_equal "Test Title", created_book.title
-      assert_equal "12345678901234", created_book.isbn
+      assert_equal "1234567891234", created_book.isbn
     end
   end
 end

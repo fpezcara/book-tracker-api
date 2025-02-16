@@ -3,7 +3,7 @@ FactoryBot.define do
     title { "The First Day of Spring" }
     authors { [ "Nancy Tucker" ] }
     published_date { "boo" }
-    isbn { "978-1453721132" }
+    isbn { "9781453721132" }
     page_count { 328 }
     cover_image { "http://books.google.com/books/content?id=8drgDwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api" }
   end

@@ -4,7 +4,7 @@ class Book < ApplicationRecord
   has_and_belongs_to_many :lists
 
   validates :title, presence: true
-  validates :isbn, uniqueness: true, length: { is: 14 }
+  validates :isbn, uniqueness: true, length: { is: 13 }
 
   def as_json(options = {})
     super(options).merge("published_date" => published_date&.strftime("%Y-%m-%d"))
