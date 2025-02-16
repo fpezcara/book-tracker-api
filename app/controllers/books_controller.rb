@@ -24,13 +24,12 @@ class BooksController < ApplicationController
 
   # todo: this needs to return a list of books (first 10 probably)
   def search
-    search_by = params[:search_by]
     query = params[:query]
+    search_by = params[:search_by]
 
     books = GoogleBooksService.fetch_books(query, search_by)
 
-    puts "BOOKS", books
-    if books
+    if books[:data].present?
       render json: books[:data]
     end
   end
