@@ -5,4 +5,8 @@ class Book < ApplicationRecord
 
   validates :title, presence: true
   validates :isbn, uniqueness: true, length: { is: 14 }
+
+  def as_json(options = {})
+    super(options).merge("published_date" => published_date&.strftime("%Y-%m-%d"))
+  end
 end

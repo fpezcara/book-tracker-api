@@ -1,6 +1,21 @@
 class BooksController < ApplicationController
+  # Skip authentication for now
+  allow_unauthenticated_access
+  skip_before_action :verify_authenticity_token
+
+  attr_accessor :book
+
+  def index
+    # todo: to get all books
+  end
+
+  # todo: this endpoint will be called with all the details to save the book
   def create
-    # to create a new book
+    @book = Book.create(book_params)
+
+    if @book.save!
+      render json: @book, status: :created
+    end
   end
 
   def show
@@ -8,7 +23,9 @@ class BooksController < ApplicationController
     # to get one specific book - is this needed
   end
 
+  # todo: this needs to return a list of books (first 10 probably)
   def search
+    GoogleBooksService.fetch_books(query, search_by)
     # to create proxy to call the google api service
   end
 
@@ -23,6 +40,6 @@ class BooksController < ApplicationController
   private
 
     def book_params
-      # TODO: how can I do this if the params will come from the google api
+      params.require(:book).permit(:title, { authors: [] }, :published_date, :isbn, :page_count, :cover_image)
     end
 end

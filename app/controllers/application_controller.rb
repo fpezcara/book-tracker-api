@@ -14,15 +14,15 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def rescue_from_parameter_missing(exception)
-    render json: { message: exception.message }, status: :bad_request
-  end
+    def rescue_from_parameter_missing(exception)
+      render json: { message: exception.message }, status: :bad_request
+    end
 
-  def rescue_from_not_found_status(exception)
-    render json: { message: exception.message }, status: :not_found
-  end
+    def rescue_from_not_found_status(exception)
+      render json: { message: exception.message }, status: :not_found
+    end
 
-  def rescue_from_invalid_record(exception)
-    render json: { message: exception.message }, status: :bad_request
-  end
+    def rescue_from_invalid_record(exception)
+      render json: { message: exception.message }, status: :bad_request
+    end
 end
