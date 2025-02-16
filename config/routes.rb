@@ -19,5 +19,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :lists, only: %i[create update destroy show]
+  resources :users do
+    resources :lists, only: %i[create update destroy show]
+  end
 end
