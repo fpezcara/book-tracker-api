@@ -5,6 +5,7 @@ require "faraday"
 class GoogleBooksService
   BASE_URL = "https://www.googleapis.com/books/v1/volumes?q="
   ALLOWED_SEARCH_BY = %w[title author isbn]
+  GOOGLE_BOOKS_API_KEY = Rails.application.credentials.google_books_api_key
 
   def self.fetch_books(query, search_by)
     unless ALLOWED_SEARCH_BY.include?(search_by)
@@ -27,7 +28,7 @@ class GoogleBooksService
 
   private
     def self.build_url(query, search_by)
-      "#{BASE_URL}#{map_search_by(search_by)}:#{query}&orderBy=relevance&key=#{Rails.application.credentials.google_books_api_key}"
+      "#{BASE_URL}#{map_search_by(search_by)}:#{query}&orderBy=relevance&key=#{GOOGLE_BOOKS_API_KEY}"
     end
 
     def self.map_search_by(search_by)
