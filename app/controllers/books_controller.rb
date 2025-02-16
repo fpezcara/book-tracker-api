@@ -7,6 +7,7 @@ class BooksController < ApplicationController
 
   def index
     # todo: to get all books
+    render json: Book.all
   end
 
   # todo: this endpoint will be called with all the details to save the book
