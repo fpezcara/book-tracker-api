@@ -5,6 +5,25 @@ class BooksControllerTest < ActionController::TestCase
     @book_params = { title: "Test Title", authors: [ "Test author" ], published_date: "2025-02-16",
 isbn: "12345678901234", page_count: 235, cover_image: "fake-image.url" }
   end
+
+  class IndexActionTest < BooksControllerTest
+    test "GET /books returns an empty array when no books exist" do
+       get :index
+
+       assert_response :success
+       assert_equal Book.all, []
+     end
+
+    test "GET /books returns all books when books exist" do
+      book = Book.create!(@book_params)
+
+      get :index
+
+      assert_response :success
+      assert_equal Book.all, [ book ]
+    end
+  end
+
   class CreateActionTest < BooksControllerTest
     test "POST /books with missing params returns bad request" do
       post :create, params: { book: {} }
