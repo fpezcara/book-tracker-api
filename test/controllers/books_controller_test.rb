@@ -52,18 +52,26 @@ isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
       assert_response :created
     end
 
+    # test "POST /books when book exists in db it returns it" do
+    #   book = Book.create!(@books_params)
+
+    #   post :create, params: { book: @book_params }
+
+    # end
+
     test "POST /books creates a new book record" do
    post :create, params: { book: @book_params }
    created_book = Book.last
-
+   response_body = JSON.parse(response.body)
 
    assert created_book.present?
-   assert_equal @book_params[:title], created_book.title
-   assert_equal @book_params[:authors], created_book.authors
-   assert_equal @book_params[:isbn], created_book.isbn
-   assert_equal @book_params[:published_date], created_book.published_date.to_s
-   assert_equal @book_params[:page_count], created_book.page_count
-   assert_equal @book_params[:cover_image], created_book.cover_image
+
+   assert_equal response_body["title"], created_book.title
+   assert_equal response_body["authors"], created_book.authors
+   assert_equal response_body["isbn"], created_book.isbn
+   assert_equal response_body["published_date"], created_book.published_date.to_s
+   assert_equal response_body["page_count"], created_book.page_count
+   assert_equal response_body["cover_image"], created_book.cover_image
  end
 
     test "POST /books returns the newly created book" do
