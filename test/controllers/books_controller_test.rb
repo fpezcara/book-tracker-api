@@ -45,19 +45,19 @@ isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
     end
 
     test "POST /books with valid params returns created" do
-      post :create,
-
-      params: { book: @book_params }
+      post :create, params: { book: @book_params }
 
       assert_response :created
     end
 
-    # test "POST /books when book exists in db it returns it" do
-    #   book = Book.create!(@books_params)
+    test "POST /books when book exists in db it returns it" do
+      book = Book.create!(title: "Test Title", isbn: "1234567890123")
 
-    #   post :create, params: { book: @book_params }
+      post :create, params: { book: @book_params }
 
-    # end
+      assert_response :ok
+      assert_equal response.body, book.to_json
+    end
 
     test "POST /books creates a new book record" do
    post :create, params: { book: @book_params }
