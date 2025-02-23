@@ -29,6 +29,7 @@ class BooksController < ApplicationController
   end
 
   # todo: this needs to return a list of books (first 10 probably)
+  # https://developers.google.com/books/docs/v1/using#pagination
   def search
     query = params[:query]
     search_by = params[:search_by]
