@@ -16,6 +16,13 @@ class BookTest < ActiveSupport::TestCase
     assert_not_nil @book.errors[:title], "No validation error for title present"
   end
 
+  test "invalid without an isbn" do
+   @book.isbn = nil
+
+   assert_not @book.valid?, "Saved the book without an isbn"
+   assert_not_nil @book.errors[:isbn], "No validation error for isbn present"
+ end
+
   test "invalid with duplicate isbn" do
     @book.save!
     duplicate_book = FactoryBot.build(:book, isbn: @book.isbn)
