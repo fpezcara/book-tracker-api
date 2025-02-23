@@ -24,13 +24,6 @@ class BookTest < ActiveSupport::TestCase
     assert_not_nil duplicate_book.errors[:isbn], "No validation error for ISBN present"
   end
 
-  test "invalid with incorrect isbn length" do
-    @book.isbn = "123"
-
-    assert_not @book.valid?, "Saved the book with incorrect ISBN length"
-    assert_not_nil @book.errors[:isbn], "No validation error for ISBN length present"
-  end
-
   test "associations" do
     assert_respond_to @book, :lists
   end

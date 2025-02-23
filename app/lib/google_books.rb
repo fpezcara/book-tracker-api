@@ -19,6 +19,7 @@ module GoogleBooks
       # todo: probably will need to revise how many books we send back
       if response.success?
         data = JSON.parse(response.body)["items"]
+
         formatted_books = data.map { |book| formatted_data(book) }
 
         { data: formatted_books }

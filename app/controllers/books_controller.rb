@@ -37,7 +37,7 @@ class BooksController < ApplicationController
     client = GoogleBooks::Client.new
     books = client.fetch_books(query, search_by)
 
-    if books[:data].present?
+    if books[:data]
       render json: books[:data]
     end
   end
