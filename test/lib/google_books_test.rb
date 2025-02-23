@@ -1,12 +1,11 @@
 require "test_helper"
 require_relative "../stubs/stub_google_books_api"
 
-class GoogleBooksServiceTest < ActiveSupport::TestCase
+class GoogleBooksTest < ActiveSupport::TestCase
   def setup
     @query = "first day"
     @search_by = "title"
-    @api_key = Rails.application.credentials.google_books_api_key
-    @base_url = "https://www.googleapis.com/books/v1/volumes?q="
+    @google_books_client = GoogleBooks::Client.new
   end
 
 
@@ -43,7 +42,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
         }
       ]
 
-    books = GoogleBooksService.fetch_books(@query, @search_by)
+    books = @google_books_client.fetch_books(@query, @search_by)
 
     assert_equal({ data: expected_response }, books)
   end
@@ -51,7 +50,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
   def test_fetch_books_failure
     stub_bad_request!(@query)
 
-    books = GoogleBooksService.fetch_books(@query, @search_by)
+    books = @google_books_client.fetch_books(@query, @search_by)
 
     assert_equal({ error: "Request failed with status 500" }, books)
   end
@@ -59,7 +58,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
   def test_fetch_books_with_wrong_search_by_option
     search_by = "wrong_search_by"
 
-    books = GoogleBooksService.fetch_books(@query, search_by)
+    books = @google_books_client.fetch_books(@query, search_by)
 
     assert_equal({ error: "Invalid search_by parameter" }, books)
   end
