@@ -1,4 +1,5 @@
 require "test_helper"
+require_relative "../stubs/stub_google_books_api"
 
 class GoogleBooksServiceTest < ActiveSupport::TestCase
   def setup
@@ -29,13 +30,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
       ]
     }.to_json
 
-    stub_request(:get, "#{@base_url}intitle:#{@query}&orderBy=relevance&key=#{@api_key}").
-      with(
-        headers: {
-              "Accept"=>"*/*",
-              "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-              "User-Agent"=>"Faraday v2.12.2"
-        }).to_return(status: 200, body: response_body, headers: {})
+    stub_book_found!(@query, response_body)
 
     expected_response = [
         {
@@ -54,8 +49,7 @@ class GoogleBooksServiceTest < ActiveSupport::TestCase
   end
 
   def test_fetch_books_failure
-    stub_request(:get, "#{@base_url}intitle:#{@query}&orderBy=relevance&key=#{@api_key}")
-      .to_return(status: 500, body: "", headers: {})
+    stub_bad_request!(@query)
 
     books = GoogleBooksService.fetch_books(@query, @search_by)
 
