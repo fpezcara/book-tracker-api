@@ -65,6 +65,8 @@ group :development, :test do
   gem "simplecov", require: false
 
   gem "factory_bot_rails"
+
+  gem "rack-cors"
 end
 
 group :development do
