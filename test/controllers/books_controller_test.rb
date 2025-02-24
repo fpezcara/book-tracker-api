@@ -131,4 +131,65 @@ isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
       assert_equal response.body, { data: expected_books_response }.to_json
     end
   end
+
+  class UpdateActionTest < BooksControllerTest
+    test "PUT /books/:id with missing id param returns bad request" do
+      patch :update, params:  { id: "" }
+
+      assert_response :bad_request
+      assert_equal response.body, { "message": "param is missing or the value is empty or invalid: id" }.to_json
+    end
+
+    test "PUT /books/:id with unknown id returns not found" do
+      patch :update, params:  { id: "unknown_id" }
+
+      assert_response :not_found
+    end
+
+    test "PUT /books/:id when no book param is passed it returns bad request" do
+      book = Book.create(@book_params)
+
+      patch :update, params:  { id: book.id }
+
+      assert_response :bad_request
+      assert_equal response.body,
+{ message: "param is missing or the value is empty or invalid: book" }.to_json
+    end
+
+    test "PUT /books/:id when attribute to update is passed it updates the record" do
+         new_title = "Little Women"
+         new_isbn = "1293829414232"
+
+         book = Book.create(@book_params)
+
+         patch :update, params:  { id: book.id, book: { title: new_title, isbn: new_isbn } }
+
+         assert_response :success
+         assert_includes response.body, new_title
+         assert_includes response.body, new_isbn
+       end
+  end
+
+  class DestroyActionTest < BooksControllerTest
+    test "DELETE /books/:id when no id is passed it returns bad request" do
+      delete :destroy, params:  { id: "" }
+
+      assert_response :bad_request
+      assert_equal response.body, { "message": "param is missing or the value is empty or invalid: id" }.to_json
+    end
+
+    test "DELETE /books/:id when unknown id is passed it returns not found" do
+     delete :destroy, params:  { id: "unknown_id" }
+
+     assert_response :not_found
+   end
+
+    test "DELETE /books/:id when id is passed it deletes book" do
+     book = Book.create(@book_params)
+
+     delete :destroy, params:  { id: book.id }
+
+     assert_response(204)
+   end
+  end
 end
