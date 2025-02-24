@@ -27,7 +27,7 @@ class GoogleBooksTest < ActiveSupport::TestCase
           }
         }
       ]
-    }.to_json
+    }
 
     stub_book_found!(@query, response_body)
 

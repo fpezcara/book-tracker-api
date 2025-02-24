@@ -45,13 +45,19 @@ module GoogleBooks
       end
 
       def formatted_data(book)
+        return unless book["volumeInfo"]
+
+        book_data = book["volumeInfo"]
+        isbn_13 = book_data["industryIdentifiers"].find { |id|
+ id["type"] == "ISBN_13" }["identifier"] if book_data["industryIdentifiers"].size > 1
+
         {
-          title: book["volumeInfo"]["title"],
-          authors: book["volumeInfo"]["authors"],
-          published_date: book["volumeInfo"]["publishedDate"],
-          page_count: book["volumeInfo"]["pageCount"],
-          cover_image: book["volumeInfo"]["imageLinks"]["thumbnail"],
-          isbn: book["volumeInfo"]["industryIdentifiers"]&.first&.dig("identifier")
+          title: book_data["title"],
+          authors: book_data["authors"],
+          published_date: book_data["publishedDate"],
+          page_count: book_data["pageCount"],
+          cover_image: book_data["imageLinks"]["thumbnail"],
+          isbn: isbn_13 || book_data["industryIdentifiers"]&.first&.dig("identifier")
         }
       end
   end
