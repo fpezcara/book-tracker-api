@@ -133,20 +133,20 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class UpdateActionTest < BooksControllerTest
-    test "PUT /books/:id with missing id param returns bad request" do
+    test "PATCH /books/:id with missing id param returns bad request" do
       patch :update, params:  { id: "" }
 
       assert_response :bad_request
       assert_equal response.body, { "message": "param is missing or the value is empty or invalid: id" }.to_json
     end
 
-    test "PUT /books/:id with unknown id returns not found" do
+    test "PATCH /books/:id with unknown id returns not found" do
       patch :update, params:  { id: "unknown_id" }
 
       assert_response :not_found
     end
 
-    test "PUT /books/:id when no book param is passed it returns bad request" do
+    test "PATCH /books/:id when no book param is passed it returns bad request" do
       book = Book.create(@book_params)
 
       patch :update, params:  { id: book.id }
@@ -156,7 +156,7 @@ class BooksControllerTest < ActionController::TestCase
       { message: "param is missing or the value is empty or invalid: book" }.to_json
     end
 
-    test "PUT /books/:id when attribute to update is passed it updates the record" do
+    test "PATCH /books/:id when attribute to update is passed it updates the record" do
       new_title = "Little Women"
       new_isbn = "1293829414232"
 
