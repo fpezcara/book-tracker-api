@@ -21,10 +21,11 @@ class UsersControllerTest < ActionController::TestCase
      assert_equal response.body, { "message": "Validation failed: Password confirmation doesn't match Password" }.to_json
    end
 
-    test "POST /users when valid params are passed it created new user" do
+    test "POST /users when valid params are passed it creates a new user and logs the user in" do
       post :create, params: { user: @user_params }
 
       assert_response :created
+      assert_not_nil cookies[:session_id]
     end
   end
 end

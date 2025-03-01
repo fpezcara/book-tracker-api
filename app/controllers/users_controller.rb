@@ -2,7 +2,7 @@
 
 class UsersController < ApplicationController
   skip_before_action :verify_authenticity_token
-  # include Authentication
+  include Authentication
   # add create and destroy fn to allow users to get created and deleted
   # before_action :set_user, only: %i[show destroy update]
 
@@ -11,6 +11,7 @@ class UsersController < ApplicationController
 
     if user.save!
       render json: user, status: :created
+      start_new_session_for user
     end
   end
 
