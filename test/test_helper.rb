@@ -4,9 +4,10 @@ require "rails/test_help"
 require "webmock/minitest"
 
 require "simplecov"
-SimpleCov.start do
-  add_filter "/test/"
+SimpleCov.start "rails" do
+  add_filter "/test/" # Ignore test files
 end
+
 module ActiveSupport
   class TestCase
     # Run tests in parallel with specified workers
