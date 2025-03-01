@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users do
+  resources :users, only: %i[create destroy] do
     resources :lists, only: %i[index create show update destroy]
   end
 end
