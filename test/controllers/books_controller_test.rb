@@ -11,14 +11,14 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class IndexActionTest < BooksControllerTest
-    test "GET /books returns an empty array when no books exist" do
+    test "GET /books returns an empty array, when no books exist" do
       get :index
 
       assert_response :success
       assert_equal Book.all, []
     end
 
-    test "GET /books returns all books when books exist" do
+    test "GET /books returns all books, when books exist" do
       book = Book.create!(@book_params)
       another_book = Book.create!(title: "Another title", isbn: "1234567860120")
 
@@ -30,31 +30,31 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class CreateActionTest < BooksControllerTest
-    test "POST /books with missing params returns bad request" do
+    test "POST /books with missing params, returns bad request" do
       post :create, params: { book: {} }
 
       assert_response :bad_request
     end
 
-    test "POST /books when title param is missing it returns bad request" do
+    test "POST /books when title param is missing, it returns bad request" do
       post :create, params: { book: { authors: [ "Test author" ], isbn: "0123456789123" } }
 
       assert_response :bad_request
     end
 
-    test "POST /books when isbn param is missing it returns bad request" do
+    test "POST /books when isbn param is missing, it returns bad request" do
       post :create, params: { book: { authors: [ "Test author" ], title: "Test title" } }
 
       assert_response :bad_request
     end
 
-    test "POST /books with valid params returns created" do
+    test "POST /books with valid params, it returns created" do
       post :create, params: { book: @book_params }
 
       assert_response :created
     end
 
-    test "POST /books when book exists in db it returns it" do
+    test "POST /books when book exists in db, it returns it" do
       book = Book.create!(title: "Test Title", isbn: "1234567890123")
 
       post :create, params: { book: @book_params }
@@ -63,7 +63,7 @@ class BooksControllerTest < ActionController::TestCase
       assert_equal response.body, book.to_json
     end
 
-    test "POST /books creates a new book record" do
+    test "POST /books when valid params are passed, it creates a new book record" do
       post :create, params: { book: @book_params }
       created_book = Book.last
       response_body = JSON.parse(response.body)
@@ -78,14 +78,14 @@ class BooksControllerTest < ActionController::TestCase
       assert_equal response_body["cover_image"], created_book.cover_image
     end
 
-    test "POST /books returns the newly created book" do
+    test "POST /books when valid params are passed, it returns the newly created book" do
       post :create, params: { book: @book_params }
       created_book = Book.last
 
       assert_equal response.body, created_book.to_json
     end
 
-    test "POST /books with only required params creates a book" do
+    test "POST /books with only required params, it creates a book" do
       post :create, params: { book: { title: "Test Title", isbn: "1234567891234" } }
 
       assert_response :created
@@ -96,13 +96,13 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class ShowActionTest < BooksControllerTest
-    test "GET /books/:id when book does not exist it returns no books" do
+    test "GET /books/:id when book does not exist in db, it returns no books" do
       get :show, params: { id: "98adc1e3-e286-4632-9cd0-0520d5597a64" }
 
       assert_response :not_found
     end
 
-    test "GET /books/:id when book exists it returns the right book" do
+    test "GET /books/:id when book exists in db, it returns the right book" do
       book = Book.create(@book_params)
 
       get :show, params: { id: book.id }
@@ -113,7 +113,7 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class SearchActionTest < BooksControllerTest
-    test "POST /books/search when book does not exist it returns no books" do
+    test "POST /books/search when book does not exist, it returns no books" do
       stub_book_not_found!("874329742")
 
       post :search, params: { query: "874329742", search_by: "title" }
@@ -122,7 +122,7 @@ class BooksControllerTest < ActionController::TestCase
       assert_equal response.body, { data: [] }.to_json
     end
 
-    test "POST /books/search when book exists it returns an array with books" do
+    test "POST /books/search when book exists, it returns an array with books" do
       stub_book_found!("little women", books_response)
 
       post :search, params: { query: "little women", search_by: "title" }
@@ -133,7 +133,7 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class UpdateActionTest < BooksControllerTest
-    test "PATCH /books/:id with missing id param returns bad request" do
+    test "PATCH /books/:id with missing id param, it returns bad request" do
       patch :update, params:  { id: "" }
 
       assert_response :bad_request
@@ -146,7 +146,7 @@ class BooksControllerTest < ActionController::TestCase
       assert_response :not_found
     end
 
-    test "PATCH /books/:id when no book param is passed it returns bad request" do
+    test "PATCH /books/:id when no book param is passed, it returns bad request" do
       book = Book.create(@book_params)
 
       patch :update, params:  { id: book.id }
@@ -156,7 +156,7 @@ class BooksControllerTest < ActionController::TestCase
       { message: "param is missing or the value is empty or invalid: book" }.to_json
     end
 
-    test "PATCH /books/:id when attribute to update is passed it updates the record" do
+    test "PATCH /books/:id when attribute to update is passed, it updates the record" do
       new_title = "Little Women"
       new_isbn = "1293829414232"
 
@@ -171,20 +171,20 @@ class BooksControllerTest < ActionController::TestCase
   end
 
   class DestroyActionTest < BooksControllerTest
-    test "DELETE /books/:id when no id is passed it returns bad request" do
+    test "DELETE /books/:id when no id is passed, it returns bad request" do
       delete :destroy, params:  { id: "" }
 
       assert_response :bad_request
       assert_equal response.body, { "message": "param is missing or the value is empty or invalid: id" }.to_json
     end
 
-    test "DELETE /books/:id when unknown id is passed it returns not found" do
+    test "DELETE /books/:id when unknown id is passed, it returns not found" do
       delete :destroy, params:  { id: "unknown_id" }
 
       assert_response :not_found
     end
 
-    test "DELETE /books/:id when id is passed it deletes book" do
+    test "DELETE /books/:id when id is passed, it deletes book" do
       book = Book.create(@book_params)
 
       delete :destroy, params:  { id: book.id }
