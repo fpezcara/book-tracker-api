@@ -22,7 +22,7 @@ class UsersController < ApplicationController
     end
 
     def set_user
-      @user = User.find_by(params[:id]) if params[:id].to_i == @current_user&.id
+      @user = User.find_by(id: params[:id]) if params[:id].to_i == @current_user&.id
       return unless @user.nil?
 
       head :unauthorized
