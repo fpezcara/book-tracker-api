@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  skip_before_action :verify_authenticity_token
   include Authentication
-  # add create and destroy fn to allow users to get created and deleted
+
+  skip_before_action :verify_authenticity_token
   before_action :set_user, only: %i[show destroy update]
 
   def create
@@ -36,9 +36,10 @@ class UsersController < ApplicationController
     end
 
     def set_user
-      @user = User.find_by(id: params[:id]) if params[:id].to_i == @current_user&.id
-      return unless @user.nil?
+      @user = User.find_by(id: params[:id]) if params[:id] == Current.session&.user_id.to_s
 
-      head :unauthorized
+      unless @user
+        head :unauthorized and return
+      end
     end
 end
