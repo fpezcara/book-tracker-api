@@ -7,16 +7,16 @@ class BooksControllerTest < ActionController::TestCase
 
   def setup
     @book_params = { title: "Test Title", authors: [ "Test author" ], published_date: "2025-02-16",
-isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
+    isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
   end
 
   class IndexActionTest < BooksControllerTest
     test "GET /books returns an empty array when no books exist" do
-       get :index
+      get :index
 
-       assert_response :success
-       assert_equal Book.all, []
-     end
+      assert_response :success
+      assert_equal Book.all, []
+    end
 
     test "GET /books returns all books when books exist" do
       book = Book.create!(@book_params)
@@ -153,21 +153,21 @@ isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
 
       assert_response :bad_request
       assert_equal response.body,
-{ message: "param is missing or the value is empty or invalid: book" }.to_json
+      { message: "param is missing or the value is empty or invalid: book" }.to_json
     end
 
     test "PUT /books/:id when attribute to update is passed it updates the record" do
-         new_title = "Little Women"
-         new_isbn = "1293829414232"
+      new_title = "Little Women"
+      new_isbn = "1293829414232"
 
-         book = Book.create(@book_params)
+      book = Book.create(@book_params)
 
-         patch :update, params:  { id: book.id, book: { title: new_title, isbn: new_isbn } }
+      patch :update, params:  { id: book.id, book: { title: new_title, isbn: new_isbn } }
 
-         assert_response :success
-         assert_includes response.body, new_title
-         assert_includes response.body, new_isbn
-       end
+      assert_response :success
+      assert_includes response.body, new_title
+      assert_includes response.body, new_isbn
+    end
   end
 
   class DestroyActionTest < BooksControllerTest
@@ -179,17 +179,17 @@ isbn: "1234567890123", page_count: 235, cover_image: "fake-image.url" }
     end
 
     test "DELETE /books/:id when unknown id is passed it returns not found" do
-     delete :destroy, params:  { id: "unknown_id" }
+      delete :destroy, params:  { id: "unknown_id" }
 
-     assert_response :not_found
-   end
+      assert_response :not_found
+    end
 
     test "DELETE /books/:id when id is passed it deletes book" do
-     book = Book.create(@book_params)
+      book = Book.create(@book_params)
 
-     delete :destroy, params:  { id: book.id }
+      delete :destroy, params:  { id: book.id }
 
-     assert_response(204)
-   end
+      assert_response(204)
+    end
   end
 end
