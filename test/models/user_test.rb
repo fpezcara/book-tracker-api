@@ -2,12 +2,14 @@ require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
   setup do
-    @user = FactoryBot.create(:user)
+    @user = FactoryBot.build(:user)
   end
 
   test "valid user" do
     assert @user.valid?
-    assert_equal 1, User.count
+    assert_difference "User.count", +1 do
+      @user.save!
+    end
   end
 
   test "invalid when email_address is missing" do
@@ -25,5 +27,31 @@ class UserTest < ActiveSupport::TestCase
 
     assert_not @user.valid?
     assert_equal [ "Password can't be blank" ], @user.errors.full_messages
+  end
+
+  test "invalid when password and password_confirmation do not match" do
+    @user.password = "password1234"
+    @user.password_confirmation = "password12345"
+    @user.valid?
+
+    assert_not @user.valid?
+    assert_equal [ "Password confirmation doesn't match Password" ], @user.errors.full_messages
+  end
+
+  test "user can have many lists" do
+    list1 = FactoryBot.create(:list, user: @user)
+    list2 = FactoryBot.create(:list, name: "wishlist", user: @user)
+
+    assert_equal 2, @user.lists.count
+    assert_includes @user.lists, list1
+    assert_includes @user.lists, list2
+  end
+
+  test "destroying user also destroys associated lists" do
+    FactoryBot.create(:list, user: @user)
+
+    assert_difference "List.count", -1 do
+      @user.destroy
+    end
   end
 end

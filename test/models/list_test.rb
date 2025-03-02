@@ -2,12 +2,16 @@ require "test_helper"
 
 class ListTest < ActiveSupport::TestCase
   setup do
+    @user = FactoryBot.create(:user)
     @book = FactoryBot.create(:book)
-    @list = FactoryBot.create(:list, name: "wishlist")
+    @list = FactoryBot.build(:list, user: @user)
   end
 
   test "valid list" do
     assert @list.valid?
+    assert_difference "List.count", +1 do
+      @list.save!
+    end
   end
 
   test "invalid without a name" do
@@ -19,6 +23,8 @@ class ListTest < ActiveSupport::TestCase
   end
 
   test "name must be unique" do
+    @list.save!
+
     duplicated_list = FactoryBot.build(:list, name: @list.name)
     duplicated_list .valid?
 
