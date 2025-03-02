@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   include Authentication
 
   skip_before_action :verify_authenticity_token
-  before_action :set_user, only: %i[show destroy update]
+  before_action :set_user, only: %i[show update destroy]
 
   def create
     user = User.create(create_params)
@@ -26,7 +26,8 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user.delete!
+    @user.destroy!
+    terminate_session
   end
 
   private
