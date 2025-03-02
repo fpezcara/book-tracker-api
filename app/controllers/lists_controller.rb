@@ -42,7 +42,7 @@ class ListsController < ApplicationController
     end
 
     def set_list
-      @list || List.find(id: params.require(:list)[:id])
+      @list = List.find(params.require(:id))
     end
 
     def set_user

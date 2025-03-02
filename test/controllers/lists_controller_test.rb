@@ -71,4 +71,38 @@ class ListsControllerTest < ActionController::TestCase
      assert_includes response.body, list_name.to_json
    end
   end
+
+  class ShowActionTest < ListsControllerTest
+    def setup
+      super
+      @list = FactoryBot.create(:list, user_id: @user.id)
+    end
+
+    test "GET /users/:user_id/lists/:id when user is signed out, it returns unauthorized" do
+      cookies.signed[:session_id] = nil
+
+      get :show, params: { user_id: @user.id, id: @list.id }
+
+      assert_response :unauthorized
+    end
+
+    test "GET /users/:user_id/lists/:id when user is signed in & no list id is passed, it returns bad request" do
+      get :show, params: { user_id: @user.id, id: "" }
+
+      assert_response :bad_request
+    end
+
+    test "GET /users/:user_id/lists/:id when user is signed in & invalid list id is passed, it returns not found" do
+      get :show, params: { user_id: @user.id, id: "invalid_id" }
+
+      assert_response :not_found
+    end
+
+    test "GET /users/:user_id/lists/:id when user is signed in & valid list id is passed, it renders the list" do
+      get :show, params: { user_id: @user.id, id: @list.id }
+
+      assert_response :success
+      assert_includes response.body, @list.to_json
+    end
+  end
 end
