@@ -105,4 +105,46 @@ class ListsControllerTest < ActionController::TestCase
       assert_includes response.body, @list.to_json
     end
   end
+
+  class UpdateActionTest < ListsControllerTest
+    def setup
+      super
+      @list = FactoryBot.create(:list, user_id: @user.id)
+    end
+
+    test "PATCH /users/:user_id/lists/:id when user is signed out, it returns unauthorized" do
+      cookies.signed[:session_id] = nil
+
+      patch :update, params: { user_id: @user.id, id: @list.id }
+
+      assert_response :unauthorized
+    end
+
+    test "PATCH /users/:user_id/lists/:id when user is signed in & no id is passed, it returns bad request" do
+      patch :update, params: { user_id: @user.id, id: "" }
+
+      assert_response :bad_request
+    end
+
+    test "PATCH /users/:user_id/lists/:id when user is signed in & invalid id is passed, it returns not found" do
+     patch :update, params: { user_id: @user.id, id: "invalid_id" }
+
+     assert_response :not_found
+   end
+
+    test "PATCH /users/:user_id/lists/:id when user is signed in & valid id is passed & name to update is missing, it returns bad request" do
+     patch :update, params: { user_id: @user.id, id: @list.id }
+
+     assert_response :bad_request
+   end
+    test "PATCH /users/:user_id/lists/:id when user is signed in & valid id is passed, it updates the list record" do
+     new_name = "Completed"
+
+     patch :update, params: { user_id: @user.id, id: @list.id, list: { name: new_name } }
+
+     assert_response :success
+     assert_equal new_name, @list.reload.name
+     assert_includes response.body, new_name.to_json
+   end
+  end
 end
