@@ -11,7 +11,7 @@ class ListsControllerTest < ActionController::TestCase
     test "GET /users/:user_id/lists when user is signed out, it returns unauthorized" do
       cookies.signed[:session_id] = nil
 
-      get :index, params: { user_id: 1234 }
+      get :index, params: { user_id: @user.id }
 
       assert_response :unauthorized
     end

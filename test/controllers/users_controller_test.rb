@@ -56,7 +56,7 @@ class UsersControllerTest < ActionController::TestCase
     test "GET /users/:id when user is not signed in, it returns unauthorized" do
       cookies.signed[:session_id] = nil
 
-      get :show, params: { id: 2312 }
+      get :show, params: { id: @user.id }
 
       assert_response :unauthorized
     end
@@ -75,7 +75,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   class UpdateActionTest < UsersControllerTest
-    test "PATCH /users/:id when user is not logged in, it returns unauthorised" do
+    test "PATCH /users/:id when user is logged out, it returns unauthorised" do
       cookies.signed[:session_id] = nil
 
       patch :update, params: { id: @user.id, user: {} }
@@ -110,7 +110,7 @@ class UsersControllerTest < ActionController::TestCase
     test "DELETE /users/:id when user is logged out, it returns unauthorized" do
       cookies.signed[:session_id] = nil
 
-      delete :destroy, params: { id: 1234 }
+      delete :destroy, params: { id: @user.id }
 
       assert_response :unauthorized
     end
