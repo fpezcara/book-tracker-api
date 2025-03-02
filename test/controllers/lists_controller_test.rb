@@ -139,9 +139,9 @@ class ListsControllerTest < ActionController::TestCase
      assert_response :bad_request
    end
     test "PATCH /users/:user_id/lists/:id when user is signed in & valid id is passed, it updates the list record" do
-     new_name = "Completed"
+      new_name = "Completed"
 
-     patch :update, params: { user_id: @user.id, id: @list.id, list: { name: new_name } }
+      patch :update, params: { user_id: @user.id, id: @list.id, list: { name: new_name } }
 
       assert_response :success
       assert_equal new_name, @list.reload.name
@@ -155,7 +155,7 @@ class ListsControllerTest < ActionController::TestCase
       @list = FactoryBot.create(:list, user_id: @user.id)
     end
 
-    test 'DELETE /users/:user_id/lists/:id when user is signed out, it returns unauthorised' do
+    test "DELETE /users/:user_id/lists/:id when user is signed out, it returns unauthorised" do
       cookies.signed[:session_id] = nil
 
       delete :destroy, params: { user_id: @user.id, id: @list.id }
@@ -163,13 +163,13 @@ class ListsControllerTest < ActionController::TestCase
       assert_response :unauthorized
     end
 
-    test 'DELETE /users/:user_id/lists/:id when user is signed in & list id is missing, it returns bad request' do
-      delete :destroy, params: { user_id: @user.id, id: '' }
+    test "DELETE /users/:user_id/lists/:id when user is signed in & list id is missing, it returns bad request" do
+      delete :destroy, params: { user_id: @user.id, id: "" }
 
       assert_response :bad_request
     end
 
-    test 'DELETE /users/:user_id/lists/:id when user is signed in & list id is valid, it deletes the list record' do
+    test "DELETE /users/:user_id/lists/:id when user is signed in & list id is valid, it deletes the list record" do
       delete :destroy, params: { user_id: @user.id, id: @list.id }
 
       assert_response(204)
