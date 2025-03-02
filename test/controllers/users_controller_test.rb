@@ -46,7 +46,7 @@ class UsersControllerTest < ActionController::TestCase
 
       assert_response :created
       assert_equal @user_params[:email_address], created_user.email_address
-      assert_equal @user_params[:password], BCrypt::Password.new(created_user.password_digest)
+      assert BCrypt::Password.new(created_user.password_digest).is_password?(@user_params[:password])
 
       assert_equal created_user.id, session.user_id
     end
@@ -98,7 +98,7 @@ class UsersControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_equal new_email, @user.reload.email_address
-      assert_equal new_password, BCrypt::Password.new(@user.password_digest)
+      assert BCrypt::Password.new(@user.reload.password_digest).is_password?(new_password)
 
       expected_response = JSON.parse(@user.reload.to_json)
       actual_response = JSON.parse(response.body)
