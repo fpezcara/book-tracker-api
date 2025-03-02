@@ -4,8 +4,7 @@ class ListsControllerTest < ActionController::TestCase
   def setup
     @user = FactoryBot.create(:user)
     @session = Session.create(user: @user)
-    cookies.signed[:session_id] = @session_id
-    @list = FactoryBot.create(:list)
+    cookies.signed[:session_id] = @session.id
   end
 
   class IndexActionTest < ListsControllerTest
@@ -24,10 +23,20 @@ class ListsControllerTest < ActionController::TestCase
     end
 
 
-    test "GET /users/:user_id/lists when user is signed in & an valid user_id is passed, it returns an empty array if there are no lists" do
+    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns an empty array if there are no lists" do
       get :index, params: { user_id: @user.id }
-      puts @user.id.class
+
       assert_response :success
+      assert_equal([].to_json, response.body)
+    end
+
+    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns an lists if they exists" do
+      list = FactoryBot.create(:list)
+
+      get :index, params: { user_id: @user.id }
+
+      assert_response :success
+      assert_includes response.body, list.to_json
     end
   end
 end
