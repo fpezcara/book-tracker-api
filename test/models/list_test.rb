@@ -3,7 +3,7 @@ require "test_helper"
 class ListTest < ActiveSupport::TestCase
   setup do
     @book = FactoryBot.create(:book)
-    @list = FactoryBot.create(:list, name: 'wishlist')
+    @list = FactoryBot.create(:list, name: "wishlist")
   end
 
   test "valid list" do
@@ -15,7 +15,7 @@ class ListTest < ActiveSupport::TestCase
     @list.valid?
 
     assert_not @list.valid?
-    assert_equal ["Name can't be blank"], @list.errors.full_messages
+    assert_equal [ "Name can't be blank" ], @list.errors.full_messages
   end
 
   test "name must be unique" do
@@ -23,7 +23,7 @@ class ListTest < ActiveSupport::TestCase
     duplicated_list .valid?
 
     assert_not duplicated_list.valid?, "Saved the list with duplicate name"
-    assert_equal ['Name has already been taken'], duplicated_list.errors.full_messages
+    assert_equal [ "Name has already been taken" ], duplicated_list.errors.full_messages
   end
 
   test "should have many books" do

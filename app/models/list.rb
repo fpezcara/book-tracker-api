@@ -9,6 +9,6 @@ class List < ApplicationRecord
   before_save :capitalize_name
 
   def capitalize_name
-   self.name = name&.capitalize
+    self.name = name&.capitalize
   end
 end

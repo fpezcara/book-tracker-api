@@ -16,7 +16,7 @@ class UserTest < ActiveSupport::TestCase
     @user.valid?
 
     assert_not @user.valid?
-    assert_equal ["Email address can't be blank"], @user.errors.full_messages
+    assert_equal [ "Email address can't be blank" ], @user.errors.full_messages
   end
 
   test "invalid when password is missing" do
@@ -24,6 +24,6 @@ class UserTest < ActiveSupport::TestCase
     @user.valid?
 
     assert_not @user.valid?
-    assert_equal ["Password can't be blank"], @user.errors.full_messages
+    assert_equal [ "Password can't be blank" ], @user.errors.full_messages
   end
 end
