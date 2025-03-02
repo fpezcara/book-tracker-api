@@ -41,7 +41,7 @@ class ListsControllerTest < ActionController::TestCase
   end
 
   class CreateActionTest < ListsControllerTest
-    test "POST /users/:id/lists when user is signed out, it returns unauthorized" do
+    test "POST /users/:user_id/lists when user is signed out, it returns unauthorized" do
       cookies.signed[:session_id] = nil
 
       post :create, params: { user_id: 1234 }
@@ -49,19 +49,19 @@ class ListsControllerTest < ActionController::TestCase
       assert_response :unauthorized
     end
 
-    test "POST /users/:id/lists when user is signed in & invalid user_id is passed, it returns unauthorized" do
+    test "POST /users/:user_id/lists when user is signed in & invalid user_id is passed, it returns unauthorized" do
       post :create, params: { user_id: 1234, book: { name: "Wishlist" } }
 
       assert_response :unauthorized
     end
 
-    test "POST /users/:id/lists when user is signed in & valid user_id is passed & name is not passed, it returns bad request" do
+    test "POST /users/:user_id/lists when user is signed in & valid user_id is passed & name is not passed, it returns bad request" do
       post :create, params: { user_id: @user.id, list: {} }
 
       assert_response :bad_request
     end
 
-    test "POST /users/:id/lists when user is signed in & valid user_id is passed & name is passed, it creates list" do
+    test "POST /users/:user_id/lists when user is signed in & valid user_id is passed & name is passed, it creates list" do
      list_name = "Thriller"
 
      post :create, params: { user_id: @user.id, list: { name: list_name } }
