@@ -69,6 +69,7 @@ class ListsControllerTest < ActionController::TestCase
      assert_response :success
      assert_equal list_name, List.last[:name]
      assert_includes response.body, list_name.to_json
+     assert_equal 1, List.count
    end
   end
 
@@ -142,9 +143,38 @@ class ListsControllerTest < ActionController::TestCase
 
      patch :update, params: { user_id: @user.id, id: @list.id, list: { name: new_name } }
 
-     assert_response :success
-     assert_equal new_name, @list.reload.name
-     assert_includes response.body, new_name.to_json
-   end
+      assert_response :success
+      assert_equal new_name, @list.reload.name
+      assert_includes response.body, new_name.to_json
+    end
+  end
+
+  class DestroyActionTest < ListsControllerTest
+    def setup
+      super
+      @list = FactoryBot.create(:list, user_id: @user.id)
+    end
+
+    test 'DELETE /users/:user_id/lists/:id when user is signed out, it returns unauthorised' do
+      cookies.signed[:session_id] = nil
+
+      delete :destroy, params: { user_id: @user.id, id: @list.id }
+
+      assert_response :unauthorized
+    end
+
+    test 'DELETE /users/:user_id/lists/:id when user is signed in & list id is missing, it returns bad request' do
+      delete :destroy, params: { user_id: @user.id, id: '' }
+
+      assert_response :bad_request
+    end
+
+    test 'DELETE /users/:user_id/lists/:id when user is signed in & list id is valid, it deletes the list record' do
+      delete :destroy, params: { user_id: @user.id, id: @list.id }
+
+      assert_response(204)
+      assert_equal 0, List.count
+      assert_nil List.find_by(id: @list.id)
+    end
   end
 end

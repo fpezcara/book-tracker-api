@@ -126,6 +126,7 @@ class UsersControllerTest < ActionController::TestCase
 
     assert_response(204)
     assert_nil Current.session
+    assert_nil User.find_by(id: @user.id)
   end
   end
 end
