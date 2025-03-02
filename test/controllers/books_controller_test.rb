@@ -15,7 +15,7 @@ class BooksControllerTest < ActionController::TestCase
       get :index
 
       assert_response :success
-      assert_equal Book.all, []
+      assert_equal [], Book.all
     end
 
     test "GET /books returns all books, when books exist" do
@@ -25,7 +25,7 @@ class BooksControllerTest < ActionController::TestCase
       get :index
 
       assert_response :success
-      assert_equal Book.all, [ book, another_book ]
+      assert_equal [ book, another_book ], Book.all
     end
   end
 
@@ -60,7 +60,7 @@ class BooksControllerTest < ActionController::TestCase
       post :create, params: { book: @book_params }
 
       assert_response :ok
-      assert_equal response.body, book.to_json
+      assert_equal book.to_json, response.body
     end
 
     test "POST /books when valid params are passed, it creates a new book record" do
@@ -70,12 +70,12 @@ class BooksControllerTest < ActionController::TestCase
 
       assert created_book.present?
 
-      assert_equal response_body["title"], created_book.title
-      assert_equal response_body["authors"], created_book.authors
-      assert_equal response_body["isbn"], created_book.isbn
-      assert_equal response_body["published_date"], created_book.published_date.to_s
-      assert_equal response_body["page_count"], created_book.page_count
-      assert_equal response_body["cover_image"], created_book.cover_image
+      assert_equal created_book.title, response_body["title"]
+      assert_equal created_book.authors, response_body["authors"]
+      assert_equal created_book.isbn, response_body["isbn"]
+      assert_equal created_book.published_date.to_s, response_body["published_date"]
+      assert_equal created_book.page_count, response_body["page_count"]
+      assert_equal created_book.cover_image, response_body["cover_image"]
     end
 
     test "POST /books when valid params are passed, it returns the newly created book" do
@@ -90,8 +90,8 @@ class BooksControllerTest < ActionController::TestCase
 
       assert_response :created
       created_book = Book.last
-      assert_equal "Test Title", created_book.title
-      assert_equal "1234567891234", created_book.isbn
+      assert_equal created_book.title, "Test Title"
+      assert_equal created_book.isbn, "1234567891234"
     end
   end
 
@@ -108,7 +108,7 @@ class BooksControllerTest < ActionController::TestCase
       get :show, params: { id: book.id }
 
       assert_response :ok
-      assert_equal response.body, book.to_json
+      assert_equal book.to_json, response.body
     end
   end
 
@@ -119,7 +119,7 @@ class BooksControllerTest < ActionController::TestCase
       post :search, params: { query: "874329742", search_by: "title" }
 
       assert_response :success
-      assert_equal response.body, { data: [] }.to_json
+      assert_equal({ data: [] }.to_json, response.body)
     end
 
     test "POST /books/search when book exists, it returns an array with books" do
@@ -128,7 +128,7 @@ class BooksControllerTest < ActionController::TestCase
       post :search, params: { query: "little women", search_by: "title" }
 
       assert_response :success
-      assert_equal response.body, { data: expected_books_response }.to_json
+      assert_equal({ data: expected_books_response }.to_json, response.body)
     end
   end
 
@@ -152,8 +152,7 @@ class BooksControllerTest < ActionController::TestCase
       patch :update, params:  { id: book.id }
 
       assert_response :bad_request
-      assert_equal response.body,
-      { message: "param is missing or the value is empty or invalid: book" }.to_json
+      assert_equal({ message: "param is missing or the value is empty or invalid: book" }.to_json, response.body)
     end
 
     test "PATCH /books/:id when attribute to update is passed, it updates the record" do
@@ -175,7 +174,7 @@ class BooksControllerTest < ActionController::TestCase
       delete :destroy, params:  { id: "" }
 
       assert_response :bad_request
-      assert_equal response.body, { "message": "param is missing or the value is empty or invalid: id" }.to_json
+      assert_equal({ "message": "param is missing or the value is empty or invalid: id" }.to_json, response.body)
     end
 
     test "DELETE /books/:id when unknown id is passed, it returns not found" do

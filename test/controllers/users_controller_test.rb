@@ -34,22 +34,21 @@ class UsersControllerTest < ActionController::TestCase
       post :create, params: { user: @user_params }
 
       assert_response :bad_request
-      assert_equal response.body, { "message": "Validation failed: Password confirmation doesn't match Password" }.to_json
+      assert_equal({ message: "Validation failed: Password confirmation doesn't match Password" }.to_json, response.body)
     end
 
     test "POST /users when valid params are passed, it creates a new user and logs the user in" do
       post :create, params: { user: @user_params }
 
       created_user = User.last
-
-      assert_response :created
-      assert_equal created_user.email_address, @user_params[:email_address]
-      assert_equal BCrypt::Password.new(created_user.password_digest), @user_params[:password]
-
       session_id = cookies.signed[:session_id]
       session = Session.find(session_id)
 
-      assert_equal session.user_id, created_user.id
+      assert_response :created
+      assert_equal @user_params[:email_address], created_user.email_address
+      assert_equal @user_params[:password], BCrypt::Password.new(created_user.password_digest)
+
+      assert_equal created_user.id, session.user_id
     end
   end
 
@@ -96,9 +95,10 @@ class UsersControllerTest < ActionController::TestCase
 
       patch :update, params: { id: @user.id, user: { email_address: new_email, password: new_password, password_confirmation: new_password } }
 
+
       assert_response :success
-      assert_equal @user.reload.email_address, new_email
-      assert_equal BCrypt::Password.new(@user.password_digest), new_password
+      assert_equal new_email, @user.reload.email_address
+      assert_equal new_password, BCrypt::Password.new(@user.password_digest)
 
       expected_response = JSON.parse(@user.reload.to_json)
       actual_response = JSON.parse(response.body)
