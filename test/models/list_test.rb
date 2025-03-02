@@ -3,7 +3,7 @@ require "test_helper"
 class ListTest < ActiveSupport::TestCase
   setup do
     @book = FactoryBot.create(:book)
-    @list = FactoryBot.create(:list)
+    @list = FactoryBot.create(:list, name: 'wishlist')
   end
 
   test "valid list" do
@@ -12,17 +12,18 @@ class ListTest < ActiveSupport::TestCase
 
   test "invalid without a name" do
     @list.name = nil
+    @list.valid?
 
-    assert_not @list.valid?, "Saved the list without a name"
-    assert_not_nil @list.errors[:name], "No validation error for title present"
+    assert_not @list.valid?
+    assert_equal ["Name can't be blank"], @list.errors.full_messages
   end
 
   test "name must be unique" do
-    @list.save!
     duplicated_list = FactoryBot.build(:list, name: @list.name)
+    duplicated_list .valid?
 
     assert_not duplicated_list.valid?, "Saved the list with duplicate name"
-    assert_not_nil duplicated_list.errors[:name], "No validation error for unique name present"
+    assert_equal ['Name has already been taken'], duplicated_list.errors.full_messages
   end
 
   test "should have many books" do
@@ -40,5 +41,11 @@ class ListTest < ActiveSupport::TestCase
     @list.books.delete(@book)
 
     assert_not_includes @list.books, @book, "List still has the associated book"
+  end
+
+  test "should capitalize book name" do
+    list = FactoryBot.create(:list, name: "completed")
+
+    assert_equal "Completed", list.reload.name
   end
 end
