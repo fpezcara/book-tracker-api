@@ -3,6 +3,7 @@ class ListsController < ApplicationController
 
   before_action :require_authentication, only: %i[index create show update destroy]
   before_action :set_user, only: %i[index create show update destroy]
+  before_action :set_list, only: %i[show update destroy]
 
   def index
     lists = List.where(user_id: params[:user_id])
@@ -11,28 +12,36 @@ class ListsController < ApplicationController
   end
 
   def create
-    List.create(list_params)
+    list = List.create!(list_params)
+
+    if list.save!
+      render json: list
+    end
   end
 
   def show
-    # add code
+    render json: @list
   end
 
   def update
-    # add code
+    if @list.update!(list_params)
+      render json: @list
+    end
   end
 
   def destroy
-    # add code
+    @list.destroy!
   end
 
   private
 
     def list_params
-      params.require(:list).permit(:name)
+      params.require(:list).permit(:name).tap do |list_params|
+        list_params[:user_id] = @user.id
+      end
     end
 
-    def list
+    def set_list
       @list || List.find(id: params.require(:list)[:id])
     end
 
