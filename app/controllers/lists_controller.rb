@@ -5,7 +5,9 @@ class ListsController < ApplicationController
   before_action :set_user, only: %i[index create show update destroy]
 
   def index
-    render json: List.all
+    lists = List.where(user_id: params[:user_id])
+
+    render json: lists
   end
 
   def create
@@ -26,7 +28,7 @@ class ListsController < ApplicationController
 
   private
 
-    def lists_params
+    def list_params
       params.require(:list).permit(:name)
     end
 

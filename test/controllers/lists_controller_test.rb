@@ -8,7 +8,7 @@ class ListsControllerTest < ActionController::TestCase
   end
 
   class IndexActionTest < ListsControllerTest
-    test "GET /users/:user_id/lists when user is signed out, it returns unauthorised" do
+    test "GET /users/:user_id/lists when user is signed out, it returns unauthorized" do
       cookies.signed[:session_id] = nil
 
       get :index, params: { user_id: 1234 }
@@ -16,7 +16,7 @@ class ListsControllerTest < ActionController::TestCase
       assert_response :unauthorized
     end
 
-    test "GET /users/:user_id/lists when user is signed in & and invalid user_id is passed, it returns unauthorised" do
+    test "GET /users/:user_id/lists when user is signed in & and invalid user_id is passed, it returns unauthorized" do
       get :index, params: { user_id: 1234 }
 
       assert_response :unauthorized
@@ -30,8 +30,8 @@ class ListsControllerTest < ActionController::TestCase
       assert_equal([].to_json, response.body)
     end
 
-    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns an lists if they exists" do
-      list = FactoryBot.create(:list)
+    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns lists if they exists" do
+      list = FactoryBot.create(:list, user_id: @user.id)
 
       get :index, params: { user_id: @user.id }
 
