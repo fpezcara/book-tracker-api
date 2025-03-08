@@ -1,26 +1,33 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
+  skip_before_action :verify_authenticity_token
   allow_unauthenticated_access only: %i[ new create ]
   rate_limit to: 10,
              within: 3.minutes,
-             only: :create,
-             with: -> { redirect_to new_session_url, alert: "Try again later." }
+             only: :create
 
   # def new
   # end
 
   def create
-    if user = User.authenticate_by(params.permit(:email_address, :password))
+    user = User.authenticate_by(create_params)
+
+    if user
       start_new_session_for user
-      # redirect_to after_authentication_url
+      head :ok
     else
-      redirect_to new_session_path, alert: "Try another email address or password."
+      head :unauthorized
     end
   end
 
   def destroy
     terminate_session
-    # redirect_to new_session_path
   end
+
+  private
+
+    def create_params
+      params.permit(:email_address, :password)
+    end
 end
