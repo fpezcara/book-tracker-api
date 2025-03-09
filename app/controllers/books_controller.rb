@@ -44,13 +44,16 @@ class BooksController < ApplicationController
     client = GoogleBooks::Client.new
     books = client.fetch_books(query, search_by)
     # sanitized_channel_name = "search_#{query.parameterize}_#{search_by.parameterize}"
+    if books[:error]
+      render json: { error: books[:error] }, status: :bad_request
+    else
+      ActionCable.server.broadcast(
+        "SearchChannel",
+        { message: books }
+      )
 
-    ActionCable.server.broadcast(
-      "SearchChannel",
-      { message: books }
-    )
-
-    render json: books
+      render json: books
+    end
   end
 
   def update
