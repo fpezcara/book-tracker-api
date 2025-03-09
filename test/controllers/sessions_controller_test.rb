@@ -39,4 +39,21 @@ class SessionsControllerTest < ActionController::TestCase
       assert_response :success
     end
   end
+
+  class CurrentUserActionTest < SessionsControllerTest
+    test "/GET when user is logged out, it returns unauthorized" do
+      get :current_user
+
+      assert_response :unauthorized
+    end
+
+    test "/GET when user is logged in, it returns the user" do
+      session = Session.create!(user_id: @user.id)
+      cookies.signed[:session_id] = session.id
+
+      get :current_user
+
+      assert_response :success
+    end
+  end
 end

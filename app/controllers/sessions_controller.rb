@@ -25,6 +25,14 @@ class SessionsController < ApplicationController
     terminate_session
   end
 
+  def current_user
+    if Current.user
+      render json: { user: Current.user }
+    else
+      head :unauthorized
+    end
+  end
+
   private
 
     def create_params
