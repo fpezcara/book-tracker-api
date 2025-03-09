@@ -116,16 +116,24 @@ class BooksControllerTest < ActionController::TestCase
     test "POST /books/search when book does not exist, it returns no books" do
       stub_book_not_found!("874329742")
 
-      post :search, params: { query: "874329742", search_by: "title" }
+      post :search, params: { book: { query: "874329742", search_by: "title" } }
 
       assert_response :success
       assert_equal({ data: [] }.to_json, response.body)
     end
 
+    test "POST /books/search when search_by param is not permitted, it raises an error" do
+    post :search, params: { book: { query: "little women", search_by: "invalid search attribute" } }
+
+    # todo: eupdate code to get a bad request when the params is not permitted
+    assert_response :bad_request
+    assert_equal({ error: "Invalid search_by parameter" }.to_json, response.body)
+  end
+
     test "POST /books/search when book exists, it returns an array with books" do
       stub_book_found!("little women", books_response)
 
-      post :search, params: { query: "little women", search_by: "title" }
+      post :search, params: { book: { query: "little women", search_by: "title" } }
 
       assert_response :success
       assert_equal({ data: expected_books_response }.to_json, response.body)

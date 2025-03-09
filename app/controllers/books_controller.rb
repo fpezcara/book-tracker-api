@@ -31,15 +31,26 @@ class BooksController < ApplicationController
   # todo: this needs to return a list of books (first 10 probably)
   # https://developers.google.com/books/docs/v1/using#pagination
   def search
-    query = params[:query]
-    search_by = params[:search_by]
+    permitted_params = params[:book] ?  params.require(:book).permit(:query, :search_by): {}
+    query = permitted_params[:query]
+    search_by = permitted_params[:search_by]
+    if query.blank? || search_by.blank?
+      render json: { error: "Missing query or search_by parameters" }, status: :bad_request
+      return
+    end
+
+    puts params.inspect
 
     client = GoogleBooks::Client.new
     books = client.fetch_books(query, search_by)
+    # sanitized_channel_name = "search_#{query.parameterize}_#{search_by.parameterize}"
 
-    if books
-      render json: books
-    end
+    ActionCable.server.broadcast(
+      "SearchChannel",
+      { message: books }
+    )
+
+    render json: books
   end
 
   def update
