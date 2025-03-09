@@ -1,6 +1,6 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "http://localhost:3000", "http://book-tracker-alpha.vercel.app"
+    origins "http://localhost:3000", "https://book-tracker-alpha.vercel.app"
 
     resource "*",
   headers: :any,
