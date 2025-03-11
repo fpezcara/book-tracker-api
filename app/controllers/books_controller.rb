@@ -52,7 +52,7 @@ class BooksController < ApplicationController
         { message: books }
       )
 
-      render json: books
+      render json: { message: "Search initiated successfully" }, status: :ok
     end
   end
 

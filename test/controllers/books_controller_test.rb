@@ -119,7 +119,7 @@ class BooksControllerTest < ActionController::TestCase
       post :search, params: { book: { query: "874329742", search_by: "title" } }
 
       assert_response :success
-      assert_equal({ data: [] }.to_json, response.body)
+      assert_equal({ message: "Search initiated successfully" }.to_json, response.body)
     end
 
     test "POST /books/search when search_by param is not permitted, it raises an error" do
@@ -136,7 +136,7 @@ class BooksControllerTest < ActionController::TestCase
       post :search, params: { book: { query: "little women", search_by: "title" } }
 
       assert_response :success
-      assert_equal({ data: expected_books_response }.to_json, response.body)
+      assert_equal({ message: "Search initiated successfully" }.to_json, response.body)
     end
   end
 
