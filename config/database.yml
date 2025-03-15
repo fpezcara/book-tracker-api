@@ -16,18 +16,22 @@ development:
 test:
   <<: *default
   database: book_tracker_test
+  migrations_paths: db/migrate, db/cable_migrate
 
 production:
   <<: *default
   database: book_tracker_production
+  migrations_paths: db/migrate, db/cable_migrate
 
 cable:
   <<: *default
   database: book_tracker_production
+  migrations_paths: db/migrate, db/cable_migrate
 
 queue:
   <<: *default
   database: book_tracker_production
+  migrations_paths: db/migrate, db/cable_migrate
 
 cache:
   <<: *default
