@@ -43,9 +43,15 @@ class BooksController < ApplicationController
     client = GoogleBooks::Client.new
     books = client.fetch_books(query, search_by)
 
+    Rails.logger "/books/search endpoint called"
+
     if books[:error]
+      Rails.logger.info "ERROR", books[:error]
+
       render json: { error: books[:error] }, status: :bad_request
     else
+      Rails.logger.info "BOOKS", books
+
       ActionCable.server.broadcast(
         "SearchChannel",
         { message: books }
