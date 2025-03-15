@@ -81,6 +81,7 @@ Rails.application.configure do
 
   config.action_cable.allowed_request_origins = [ "https://book-tracker-alpha.vercel.app" ]
 
+  config.action_cable.mount_path = "/cable"
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
