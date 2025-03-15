@@ -48,8 +48,9 @@ module GoogleBooks
         return unless book["volumeInfo"]
 
         book_data = book["volumeInfo"]
-        isbn_13 = book_data["industryIdentifiers"].find { |id|
- id["type"] == "ISBN_13" }["identifier"] if book_data["industryIdentifiers"].size > 1
+        industry_identifiers = book_data["industryIdentifiers"] || []
+        isbn_13 = industry_identifiers.find { |id| id["type"] == "ISBN_13" }&.dig("identifier")
+
 
         {
           title: book_data["title"],
