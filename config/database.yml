@@ -29,7 +29,7 @@ queue:
   <<: *default
   database: book_tracker_production
 
-# cache:
-#   <<: *default
-#   database: book_tracker_production
-#   migrations_paths: db/cache_migrate
+cache:
+  <<: *default
+  database: book_tracker_production
+  migrations_paths: db/cache_migrate
