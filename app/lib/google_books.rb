@@ -20,7 +20,7 @@ module GoogleBooks
       if response.success?
         data = JSON.parse(response.body)["items"]
 
-        formatted_books = data.map { |book| formatted_data(book) }
+        formatted_books = data.map { |book| formatted_data(book) } if !data.empty?
 
         { data: formatted_books }
       else
@@ -51,14 +51,15 @@ module GoogleBooks
         industry_identifiers = book_data["industryIdentifiers"] || []
         isbn_13 = industry_identifiers.find { |id| id["type"] == "ISBN_13" }&.dig("identifier")
 
+        isbn_13 = industry_identifiers.find { |id| id["type"] == "ISBN_13" }&.dig("identifier")
 
         {
-          title: book_data["title"],
-          authors: book_data["authors"],
-          published_date: book_data["publishedDate"],
-          page_count: book_data["pageCount"],
-          cover_image: book_data["imageLinks"]["thumbnail"],
-          isbn: isbn_13 || book_data["industryIdentifiers"]&.first&.dig("identifier")
+          title: book_data["title"] || "No title available",
+          authors: book_data["authors"] || [ "Unknown author" ],
+          published_date: book_data["publishedDate"] || "Unknown",
+          page_count: book_data["pageCount"] || 0,
+          cover_image: book_data.dig("imageLinks", "thumbnail") || "No image available",
+          isbn: isbn_13 || industry_identifiers.first&.dig("identifier") || "No ISBN available"
         }
       end
   end
