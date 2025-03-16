@@ -23,6 +23,8 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
  # Check i  f Rails can connect to the database
   # echo "Checking database connection..."
   ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
+  echo "databaseeee"
+  echo $DATABASE_URL
 
   echo "Installing solid_cache..."
   ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
