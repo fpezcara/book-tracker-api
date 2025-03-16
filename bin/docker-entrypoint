@@ -19,12 +19,16 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   # echo "Migrating database..."
   # ./bin/rails db:prepare || { echo 'db:migrate failed' ; exit 1; }
 
-  echo "Listing status of the database..."
  # Check i  f Rails can connect to the database
   # echo "Checking database connection..."
-  ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
+  echo "Listing tables in the database..."
+  ./bin/rails runner "puts ActiveRecord::Base.connection.tables"
+
+  echo "Describing table: schema_migrations"
+  ./bin/rails runner "ActiveRecord::Base.connection.columns('schema_migrations').each { |c| puts \"#{c.name} - #{c.sql_type}\" }"
+
   echo "databaseeee"
-  echo $DATABASE_URL
+  ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
 
   echo "Installing solid_cache..."
   ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
