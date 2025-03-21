@@ -13,8 +13,8 @@ DATABASE_NAME=${DATABASE_NAME:-test_db}
 
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Preparing database..."
-  ./bin/rails db:prepare RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
+  echo "Migrating database..."
+  ./bin/rails db:migrate RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
 
   # echo "Migrating database..."
   # ./bin/rails db:prepare || { echo 'db:migrate failed' ; exit 1; }
