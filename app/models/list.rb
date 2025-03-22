@@ -5,7 +5,7 @@ class List < ApplicationRecord
   belongs_to :user
   #  todo: create default lists for users (reading, to-read, completed) => hacerlo en el users model
   # def self.create_default_lists(user) - is the user param needed?
-  validates :name, presence: true, uniqueness: true
+  validates :name, presence: true, uniqueness: { scope: :user_id }
   before_save :capitalize_name
 
   def capitalize_name

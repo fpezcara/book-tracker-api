@@ -10,5 +10,12 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
-  # todo: call in callback after_create :create_default_lists & add a method called def create_default_lists and call list.create_default_lists(self)
+  after_create :create_default_lists
+
+ private
+   def create_default_lists
+     lists.create!(name: "Reading")
+     lists.create!(name: "Wishlist")
+     lists.create!(name: "Finished")
+   end
 end

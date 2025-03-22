@@ -25,7 +25,7 @@ class ListTest < ActiveSupport::TestCase
   test "name must be unique" do
     @list.save!
 
-    duplicated_list = FactoryBot.build(:list, name: @list.name)
+    duplicated_list = FactoryBot.build(:list, name: @list.name, user: @user)
     duplicated_list .valid?
 
     assert_not duplicated_list.valid?, "Saved the list with duplicate name"
@@ -50,8 +50,9 @@ class ListTest < ActiveSupport::TestCase
   end
 
   test "should capitalize book name" do
-    list = FactoryBot.create(:list, name: "completed")
+    list = FactoryBot.create(:list, name: "drama")
+    @user.lists << list
 
-    assert_equal "Completed", list.reload.name
+    assert_equal "Drama", @user.lists.order(:created_at).last.name
   end
 end

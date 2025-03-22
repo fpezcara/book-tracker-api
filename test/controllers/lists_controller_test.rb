@@ -23,11 +23,16 @@ class ListsControllerTest < ActionController::TestCase
     end
 
 
-    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns an empty array if there are no lists" do
+    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns the defaulted lists" do
       get :index, params: { user_id: @user.id }
+      response_body = JSON.parse(response.body)
+      list_names = response_body.map { |list| list["name"] }
 
       assert_response :success
-      assert_equal([].to_json, response.body)
+      assert_includes list_names, "Reading"
+      assert_includes list_names, "Wishlist"
+      assert_includes list_names, "Finished"
+      assert_equal 3, @user.lists.count
     end
 
     test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns lists if they exists" do
@@ -67,9 +72,9 @@ class ListsControllerTest < ActionController::TestCase
      post :create, params: { user_id: @user.id, list: { name: list_name } }
 
      assert_response :success
-     assert_equal list_name, List.last[:name]
+     assert_equal list_name, @user.lists.order(:created_at).last.name
      assert_includes response.body, list_name.to_json
-     assert_equal 1, List.count
+     assert_equal 4, List.count
    end
   end
 
@@ -173,7 +178,8 @@ class ListsControllerTest < ActionController::TestCase
       delete :destroy, params: { user_id: @user.id, id: @list.id }
 
       assert_response(204)
-      assert_equal 0, List.count
+      # only have the 3 defaulted lists left
+      assert_equal 3, List.count
       assert_nil List.find_by(id: @list.id)
     end
   end

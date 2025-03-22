@@ -12,6 +12,15 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  test "creates default lists when user is valid" do
+    @user.save!
+
+    assert_equal 3, @user.lists.count
+    assert_equal "Reading", @user.lists[0].name
+    assert_equal "Wishlist", @user.lists[1].name
+    assert_equal "Finished", @user.lists[2].name
+  end
+
   test "invalid when email_address is missing" do
     @user.email_address = nil
     # trigger validation
@@ -42,7 +51,7 @@ class UserTest < ActiveSupport::TestCase
     list1 = FactoryBot.create(:list, user: @user)
     list2 = FactoryBot.create(:list, name: "wishlist", user: @user)
 
-    assert_equal 2, @user.lists.count
+    assert_equal 5, @user.lists.count
     assert_includes @user.lists, list1
     assert_includes @user.lists, list2
   end
@@ -50,7 +59,7 @@ class UserTest < ActiveSupport::TestCase
   test "destroying user also destroys associated lists" do
     FactoryBot.create(:list, user: @user)
 
-    assert_difference "List.count", -1 do
+    assert_difference "List.count", -4 do
       @user.destroy
     end
   end

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :list do
-    name { "Reading" }
+    name { "Fiction" }
     association :user
   end
 end
