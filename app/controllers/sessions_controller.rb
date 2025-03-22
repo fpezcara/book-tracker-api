@@ -2,32 +2,27 @@
 
 class SessionsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  allow_unauthenticated_access only: %i[ new create ]
+  allow_unauthenticated_access only: %i[ create ]
   rate_limit to: 10,
              within: 3.minutes,
              only: :create
-
-  # def new
-  # end
 
   def create
     user = User.authenticate_by(create_params)
 
     if user
-      start_new_session_for user
-      head :ok
+      log_in(user)
+
+      render json: { userId: user.id }, status: :created
     else
       head :unauthorized
     end
   end
 
   def destroy
-    terminate_session
-  end
-
-  def current_user
-    if Current.user
-      render json: { user: Current.user }
+    if logged_in?
+      log_out
+      head :no_content
     else
       head :unauthorized
     end
@@ -36,6 +31,6 @@ class SessionsController < ApplicationController
   private
 
     def create_params
-      params.permit(:email_address, :password)
+      params.require(:session).permit(:email_address, :password)
     end
 end

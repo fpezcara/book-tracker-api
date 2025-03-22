@@ -6,53 +6,33 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   class CreateActionTest < SessionsControllerTest
-    test "POST /session when no params are passed, it returns unauthorized" do
-      post :create, params: { email_address: nil, password: nil }
+    test "POST /session when no params are passed, it returns bad request" do
+      post :create, params: { session: {} }
 
-      assert_response :unauthorized
+      assert_response :bad_request
     end
 
     test "POST /session when invalid params are passed, it returns unauthorized" do
-      post :create, params: { email_address: "invalid@email.com", password: "wrong_password" }
+      post :create, params: { session: { email_address: "invalid@email.com", password: "wrong_password" } }
 
       assert_response :unauthorized
     end
 
-    test "POST /session when valid params are passed, it returns logs user in" do
-      post :create, params: { email_address: @user[:email_address], password: "password" }
-
-      session = Session.find_by(user_id: @user.id)
+    test "POST /session when valid params are passed, it logs user in" do
+      post :create, params: { session: { email_address: @user[:email_address], password: "password" } }
 
       assert_response :success
-      assert_equal session.id, cookies.signed[:session_id]
+      assert_equal @user.id, session[:user_id]
       assert_not_nil session, "Session was not created"
     end
   end
 
   class DestroyActionTest < SessionsControllerTest
     test "/DELETE logs users out" do
-      session = Session.create!(user_id: @user.id)
-      cookies.signed[:session_id] = session.id
+      session[:user_id] = @user.id
 
       delete :destroy
-
-      assert_response :success
-    end
-  end
-
-  class CurrentUserActionTest < SessionsControllerTest
-    test "/GET when user is logged out, it returns unauthorized" do
-      get :current_user
-
-      assert_response :unauthorized
-    end
-
-    test "/GET when user is logged in, it returns the user" do
-      session = Session.create!(user_id: @user.id)
-      cookies.signed[:session_id] = session.id
-
-      get :current_user
-
+      assert_nil session[:user_id]
       assert_response :success
     end
   end

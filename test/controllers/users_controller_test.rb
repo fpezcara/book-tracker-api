@@ -4,9 +4,6 @@ class UsersControllerTest < ActionController::TestCase
   def setup
     @user_params = { email_address: "random@email.com", password: "password1234", password_confirmation: "password1234" }
     @user = FactoryBot.create(:user)
-    # sign user in
-    @session = Session.create(user: @user)
-    cookies.signed[:session_id] = @session.id
   end
 
   class CreateActionTest < UsersControllerTest
@@ -41,33 +38,33 @@ class UsersControllerTest < ActionController::TestCase
       post :create, params: { user: @user_params }
 
       created_user = User.last
-      session_id = cookies.signed[:session_id]
-      session = Session.find(session_id)
 
       assert_response :created
       assert_equal @user_params[:email_address], created_user.email_address
       assert BCrypt::Password.new(created_user.password_digest).is_password?(@user_params[:password])
 
-      assert_equal created_user.id, session.user_id
+      assert_equal created_user.id, session[:user_id]
     end
   end
 
   class ShowActionTest < UsersControllerTest
     test "GET /users/:id when user is not signed in, it returns unauthorized" do
-      cookies.signed[:session_id] = nil
-
       get :show, params: { id: @user.id }
 
       assert_response :unauthorized
     end
 
     test "GET /users/:id when user is signed in & an invalid user_id is passed, it returns unauthorized" do
+      session[:user_id] = @user.id
+
       get :show, params: { id: 2312 }
 
       assert_response :unauthorized
     end
 
-    test "GET /users/:id when user is signed in & an valid user_id is passed, it returns success" do
+    test "GET /users/:id when user is signed in & a valid user_id is passed, it returns success" do
+     session[:user_id] = @user.id
+
      get :show, params: { id: @user.id }
 
      assert_response :success
@@ -76,20 +73,21 @@ class UsersControllerTest < ActionController::TestCase
 
   class UpdateActionTest < UsersControllerTest
     test "PATCH /users/:id when user is logged out, it returns unauthorised" do
-      cookies.signed[:session_id] = nil
-
       patch :update, params: { id: @user.id, user: {} }
 
       assert_response :unauthorized
     end
 
     test "PATCH /users/:id when user is logged in & no params are passed, it returns bad request" do
+      session[:user_id] = @user.id
+
       patch :update, params: { id: @user.id, user: { email_address: "" } }
 
       assert_response :bad_request
     end
 
     test "PATCH /users/:id when user is logged in & valid params are passed, it updates the user" do
+      session[:user_id] = @user.id
       new_email = "new_email@email.com"
       new_password = "newpAssWord121"
 
@@ -108,8 +106,6 @@ class UsersControllerTest < ActionController::TestCase
 
   class DestroyActionTest < UsersControllerTest
     test "DELETE /users/:id when user is logged out, it returns unauthorized" do
-      cookies.signed[:session_id] = nil
-
       delete :destroy, params: { id: @user.id }
 
       assert_response :unauthorized
@@ -122,6 +118,8 @@ class UsersControllerTest < ActionController::TestCase
     end
 
     test "DELETE /users/:id when user is logged in & valid id is passed, it deletes the user & session" do
+    session[:user_id] = @user.id
+
     delete :destroy, params: { id: @user.id }
 
     assert_response(204)

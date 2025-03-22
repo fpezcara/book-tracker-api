@@ -12,7 +12,7 @@ class ListsController < ApplicationController
   end
 
   def create
-    list = List.create!(list_params)
+    list = current_user.lists.create!(list_params)
 
     if list.save!
       render json: list
@@ -46,11 +46,8 @@ class ListsController < ApplicationController
     end
 
     def set_user
-      user_id = params[:user_id]
-      @user = User.find_by(id: user_id) if user_id == Current.session&.user_id.to_s
+      @user = current_user if params[:user_id] == current_user&.id.to_s
 
-      unless @user
-        head :unauthorized and return
-      end
+      head :unauthorized and return unless @user
     end
 end

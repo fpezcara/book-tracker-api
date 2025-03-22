@@ -5,13 +5,14 @@ class UsersController < ApplicationController
 
   skip_before_action :verify_authenticity_token
   before_action :set_user, only: %i[show update destroy]
+  before_action :require_authentication, only: %i[ show update destroy]
 
   def create
     user = User.create(create_params)
 
     if user.save!
       render json: user, status: :created
-      start_new_session_for user
+      log_in(user)
     end
   end
 
@@ -27,7 +28,8 @@ class UsersController < ApplicationController
 
   def destroy
     @user.destroy!
-    terminate_session
+
+    log_out
   end
 
   private
@@ -37,10 +39,8 @@ class UsersController < ApplicationController
     end
 
     def set_user
-      @user = User.find_by(id: params[:id]) if params[:id] == Current.session&.user_id.to_s
+      @user = current_user if params[:id] == current_user&.id.to_s
 
-      unless @user
-        head :unauthorized and return
-      end
+      head :unauthorized and return unless @user
     end
 end
