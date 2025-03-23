@@ -11,8 +11,9 @@ class UsersController < ApplicationController
     user = User.create(create_params)
 
     if user.save!
-      render json: user, status: :created
       log_in(user)
+
+      render json: user, status: :created
     end
   end
 

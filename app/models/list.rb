@@ -11,4 +11,8 @@ class List < ApplicationRecord
   def capitalize_name
     self.name = name&.capitalize
   end
+
+  def as_json_with_books
+    as_json(include: :books)
+  end
 end

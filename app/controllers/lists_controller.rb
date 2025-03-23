@@ -8,7 +8,7 @@ class ListsController < ApplicationController
   def index
     lists = List.where(user_id: params[:user_id])
 
-    render json: lists
+    render json: lists.map(&:as_json_with_books)
   end
 
   def create
