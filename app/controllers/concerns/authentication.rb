@@ -16,9 +16,9 @@ module Authentication
 
   private
 
-    # def authenticated?
-    #   resume_session.present?
-    # end
+    def authenticated?
+      current_user.present?
+    end
 
     def require_authentication
       head :unauthorized unless current_user
