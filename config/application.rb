@@ -26,6 +26,10 @@ module BookTrackerBackend
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Set up session store with cookies
+    # config.middleware.use ActionDispatch::Cookies
+    # config.middleware.use ActionDispatch::Session::CookieStore, key: "_book_tracker_session"
+
     config.active_record.primary_key = :uuid
   end
 end
