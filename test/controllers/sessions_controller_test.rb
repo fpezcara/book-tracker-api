@@ -32,6 +32,7 @@ class SessionsControllerTest < ActionController::TestCase
       session[:user_id] = @user.id
 
       delete :destroy
+
       assert_nil session[:user_id]
       assert_response :success
     end

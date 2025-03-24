@@ -35,14 +35,19 @@ class ListsControllerTest < ActionController::TestCase
       assert_equal 3, @user.lists.count
     end
 
-    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns lists if they exists" do
+    test "GET /users/:user_id/lists when user is signed in & a valid user_id is passed, it returns lists with books array" do
       session[:user_id] = @user.id
       list = FactoryBot.create(:list, user_id: @user.id)
+      book = FactoryBot.create(:book)
+      list.books << book
 
       get :index, params: { user_id: @user.id }
 
+      response_body = JSON.parse(response.body)
+
       assert_response :success
-      assert_includes response.body, list.to_json
+      assert_includes response_body.map { |list| list["name"] }, list.name
+      assert_equal response_body.find { |l| l["name"] == list.name }["books"].count, 1
     end
   end
 
