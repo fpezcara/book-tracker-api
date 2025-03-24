@@ -24,6 +24,7 @@ class ListsControllerTest < ActionController::TestCase
       session[:user_id] = @user.id
 
       get :index, params: { user_id: @user.id }
+
       response_body = JSON.parse(response.body)
       list_names = response_body.map { |list| list["name"] }
 
