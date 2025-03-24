@@ -21,7 +21,7 @@ module Authentication
     end
 
     def require_authentication
-      puts "CURRR user", current_user.inspect
+      Rails.logger.info "CURRR user, #{current_user.present?}"
       head :unauthorized unless current_user
     end
 
