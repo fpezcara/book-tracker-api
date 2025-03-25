@@ -26,7 +26,7 @@ module Authentication
     end
 
     def current_user
-      puts "Session data:", session.to_hash # Debug: Print session contents
+      puts "Session data:", session.to_hash
       Rails.logger.debug "Current user: #{session[:user_id]}"
 
       return @current_user if defined?(@current_user)
@@ -51,6 +51,8 @@ module Authentication
       @current_user = nil
       session[:user_id] = nil
       reset_session
+
+      cookies.delete(:_book_tracker_session)
     end
 
     def logged_in?
