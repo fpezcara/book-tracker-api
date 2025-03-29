@@ -23,7 +23,6 @@ class BooksController < ApplicationController
     end
   end
 
-
   def show
     render json: @book
   end

@@ -28,6 +28,10 @@ Rails.application.routes.draw do
   end
 
   resources :users, only: %i[create show update destroy] do
-    resources :lists, only: %i[index create show update destroy]
+    resources :lists, only: %i[index create show update destroy] do
+      member do
+        post :add_book, to: "lists#add_book"
+      end
+    end
   end
 end

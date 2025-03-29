@@ -1,9 +1,11 @@
 class ListsController < ApplicationController
   include Authentication
 
-  before_action :require_authentication, only: %i[index create show update destroy]
-  before_action :set_user, only: %i[index create show update destroy]
-  before_action :set_list, only: %i[show update destroy]
+  skip_before_action :verify_authenticity_token, only: :add_book
+
+  before_action :require_authentication, only: %i[index create show update destroy add_book]
+  before_action :set_user, only: %i[index create show update destroy add_book]
+  before_action :set_list, only: %i[show update destroy add_book]
 
   def index
     lists = List.where(user_id: params[:user_id])
@@ -16,6 +18,17 @@ class ListsController < ApplicationController
 
     if list.save!
       render json: list
+    end
+  end
+
+  def add_book
+    book = Book.find_or_create_by(book_params)
+
+    if @list.books.exists?(book.id)
+      render json: { error: "Book is already in the list" }, status: :unprocessable_entity
+    else
+      @list.books << book
+      render json: @list.as_json_with_books, status: :ok
     end
   end
 
@@ -39,6 +52,10 @@ class ListsController < ApplicationController
       params.require(:list).permit(:name).tap do |list_params|
         list_params[:user_id] = @user.id
       end
+    end
+
+    def book_params
+      params.require(:book).permit(:title, :isbn, :published_date, :page_count, :cover_image, authors: [])
     end
 
     def set_list

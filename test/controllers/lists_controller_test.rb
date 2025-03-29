@@ -203,4 +203,58 @@ class ListsControllerTest < ActionController::TestCase
       assert_nil List.find_by(id: @list.id)
     end
   end
+
+  class AddBookActionTest < ListsControllerTest
+    def setup
+      super
+      @list = FactoryBot.create(:list, user_id: @user.id)
+      @book_params = { title: "Dracula", authors: [ "Bram Stoker" ], published_date: Faker::Date.backward(days: 365), isbn: "9781503261389", page_count: 260 }
+    end
+
+    test "POST /users/:user_id/lists/:list_id/add_book when user is logged out, it returns unauthorized" do
+      post :add_book, params: { user_id: @user.id, id: @list.id, book: @book_params }
+
+      assert_response :unauthorized
+    end
+
+    test "POST /users/:user_id/lists/:list_id/add_book when user is logged in and invalid user id is passed, it returns unauthorized" do
+      session[:user_id] = @user.id
+
+      post :add_book, params: { user_id: "invalid_id", id: @list.id, book: @book_params }
+
+      assert_response :unauthorized
+    end
+
+    test "POST /users/:user_id/lists/:list_id/add_book when user is logged in and book param is missing, it returns bad request" do
+      session[:user_id] = @user.id
+
+      post :add_book, params: { user_id: @user.id, id: @list.id }
+
+      assert_response :bad_request
+    end
+
+    test "POST /users/:user_id/lists/:list_id/add_book when user is logged in and valid book param passed is invalid, it returns bad request" do
+      session[:user_id] = @user.id
+      @book_params[:title] = nil
+
+      post :add_book, params: { user_id: @user.id, id: @list.id, book: @book_params }
+
+      assert_response :bad_request
+      assert_equal @list.books, []
+    end
+
+    test "POST /users/:user_id/lists/:list_id/add_book when user is logged in and valid book param is passed, it adds the book to the list" do
+      session[:user_id] = @user.id
+
+      post :add_book, params: { user_id: @user.id, id: @list.id, book: @book_params }
+
+      added_book = @list.books.last
+
+      assert_response :success
+      assert_not_nil added_book
+      assert_equal @book_params[:title], added_book.title
+      assert_equal @book_params[:authors], added_book.authors
+      assert_equal @book_params[:isbn], added_book.isbn
+    end
+  end
 end
