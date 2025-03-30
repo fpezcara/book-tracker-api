@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     resources :lists, only: %i[index create show update destroy] do
       member do
         post :add_book, to: "lists#add_book"
+        delete :remove_book, to: "lists#remove_book"
       end
     end
   end

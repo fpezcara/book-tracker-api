@@ -257,4 +257,44 @@ class ListsControllerTest < ActionController::TestCase
       assert_equal @book_params[:isbn], added_book.isbn
     end
   end
+
+  class RemoveBookActionTest < ListsControllerTest
+    def setup
+      super
+      @list = FactoryBot.create(:list, user_id: @user.id)
+      @book = FactoryBot.create(:book)
+      @list.books << @book
+    end
+
+    test "DELETE /users/:user_id/lists/:list_id/remove_book when user is logged out, it returns unauthorized" do
+      delete :remove_book, params: { user_id: @user.id, id: @list.id, book_id: @book.id }
+
+      assert_response :unauthorized
+    end
+
+    test "DELETE /users/:user_id/lists/:list_id/remove_book  when user is logged in and invalid user id is passed, it returns unauthorized" do
+      session[:user_id] = @user.id
+
+      delete :remove_book, params: { user_id: "invalid_id", id: @list.id, book_id: @book.id }
+
+      assert_response :unauthorized
+    end
+
+    test "DELETE /users/:user_id/lists/:list_id/remove_book when user is logged in and book_id param is invalid, it returns not found" do
+      session[:user_id] = @user.id
+
+      delete :remove_book, params: { user_id: @user.id, id: @list.id, book_id: "invalid_book_id" }
+
+      assert_response :not_found
+    end
+
+    test "DELETE /users/:user_id/lists/:list_id/remove_book when user is logged in and valid book_id param passed is valid, it removes the book from the list" do
+      session[:user_id] = @user.id
+
+      delete :remove_book, params: { user_id: @user.id, id: @list.id, book_id: @book.id }
+      puts "res", response.body
+      assert_response :success
+      assert_equal @list.books, []
+    end
+  end
 end

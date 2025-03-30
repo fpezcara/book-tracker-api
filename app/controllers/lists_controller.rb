@@ -1,11 +1,11 @@
 class ListsController < ApplicationController
   include Authentication
 
-  skip_before_action :verify_authenticity_token, only: :add_book
+  skip_before_action :verify_authenticity_token
 
-  before_action :require_authentication, only: %i[index create show update destroy add_book]
-  before_action :set_user, only: %i[index create show update destroy add_book]
-  before_action :set_list, only: %i[show update destroy add_book]
+  before_action :require_authentication, only: %i[index create show update destroy add_book remove_book]
+  before_action :set_user, only: %i[index create show update destroy add_book remove_book]
+  before_action :set_list, only: %i[show update destroy add_book remove_book]
 
   def index
     lists = List.where(user_id: params[:user_id])
@@ -21,17 +21,6 @@ class ListsController < ApplicationController
     end
   end
 
-  def add_book
-    book = Book.find_or_create_by(book_params)
-
-    if @list.books.exists?(book.id)
-      render json: { error: "Book is already in the list" }, status: :unprocessable_entity
-    else
-      @list.books << book
-      render json: @list.as_json_with_books, status: :ok
-    end
-  end
-
   def show
     render json: @list
   end
@@ -44,6 +33,23 @@ class ListsController < ApplicationController
 
   def destroy
     @list.destroy!
+  end
+
+  def add_book
+    book = Book.find_or_create_by(book_params)
+
+    if @list.books.exists?(book.id)
+      render json: { error: "Book is already in the list" }, status: :unprocessable_entity
+    else
+      @list.books << book
+      render json: @list.as_json_with_books, status: :ok
+    end
+  end
+
+  def remove_book
+    book = Book.find(params[:book_id])
+
+    @list.books.delete(book)
   end
 
   private
