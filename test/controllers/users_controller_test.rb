@@ -40,9 +40,12 @@ class UsersControllerTest < ActionController::TestCase
       created_user = User.last
 
       assert_response :created
+      assert_equal({ user_id: created_user.id }.to_json, response.body)
+
       assert_equal @user_params[:email_address], created_user.email_address
       assert BCrypt::Password.new(created_user.password_digest).is_password?(@user_params[:password])
 
+      # logs in user
       assert_equal created_user.id, session[:user_id]
     end
   end

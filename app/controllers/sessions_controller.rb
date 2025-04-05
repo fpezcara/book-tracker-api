@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     if user
       log_in(user)
 
-      render json: { userId: user.id }, status: :created
+      render json: { user_id: user.id }, status: :created
     else
       head :unauthorized
     end

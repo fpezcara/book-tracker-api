@@ -13,7 +13,7 @@ class UsersController < ApplicationController
     if user.save!
       log_in(user)
 
-      render json: user, status: :created
+      render json: { user_id: user.id }, status: :created
     end
   end
 
