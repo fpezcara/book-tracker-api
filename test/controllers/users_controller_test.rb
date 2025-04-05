@@ -34,6 +34,18 @@ class UsersControllerTest < ActionController::TestCase
       assert_equal({ message: "Validation failed: Password confirmation doesn't match Password" }.to_json, response.body)
     end
 
+    test "POST /users when user email has already been taken" do
+      # create user
+      new_user = FactoryBot.build(:user, email_address: @user_params[:email_address])
+      # save in db
+      new_user.save!
+
+      post :create, params: { user: @user_params }
+
+      assert_equal({ "message": "Validation failed: Email address has already been taken" }.to_json, response.body)
+      assert_response :bad_request
+    end
+
     test "POST /users when valid params are passed, it creates a new user and logs the user in" do
       post :create, params: { user: @user_params }
 
