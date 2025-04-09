@@ -9,7 +9,7 @@ def stub_book_found!(query, response_body)
       headers: {
             "Accept"=>"*/*",
             "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-            "User-Agent"=>"Faraday v2.12.2"
+            "User-Agent"=>"Faraday v2.13.0"
       }).to_return(status: 200, body: response_body.to_json, headers: {})
 end
 
