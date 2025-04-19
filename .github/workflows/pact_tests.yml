@@ -1,47 +1,71 @@
 name: Pact Provider Verification
 
 on:
+  pull_request:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
-  verify:
+  verify-pact:
     runs-on: ubuntu-latest
-
     services:
       postgres:
-        image: postgres:13
+        image: postgres:14
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Ruby
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
-
-      - name: Install dependencies
-        run: bundle install
+          ruby-version: '3.3'
+          bundler-cache: true
 
       - name: Setup database
         run: |
-          cp config/database.yml.github config/database.yml
-          bundle exec rake db:setup
+          echo "test:
+            adapter: postgresql
+            host: localhost
+            username: postgres
+            password: password
+            database: book_tracker_test" > config/database.yml
+          bundle exec rails db:create db:migrate RAILS_ENV=test
 
-      - name: Run Pact Provider Verification
-        env:
-          PACT_BROKER_BASE_URL: ${{ secrets.PACT_BROKER_URL }}
-          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Download pact file from consumer release
+        run: |
+          mkdir -p pact
+
+          RELEASE_ID=$(curl -s \
+            https://api.github.com/repos/fpezcara/book-tracker-ui/releases/tags/pact-latest \
+            | jq -r '.assets[] | select(.name | test("Book_Tracker_UI-Book_Tracker_API.json")) | .id')
+
+          curl -L \
+            -H "Accept: application/octet-stream" \
+            https://api.github.com/repos/fpezcara/book-tracker-ui/releases/assets/$RELEASE_ID \
+            -o pact/Book_Tracker_UI-Book_Tracker_API.json
+
+      - name: Start Rails server
+        run: |
+          nohup bundle exec rails server -e test -p 3000 &
+
+      - name: Verify against downloaded pact
         run: |
           bundle exec pact-provider-verifier \
-            --provider-base-url http://localhost:3000 \
-            --broker-base-url $PACT_BROKER_BASE_URL \
-            --broker-token $PACT_BROKER_TOKEN \
-            --provider-version ${{ github.sha }} \
-            --publish-verification-results
+            pact/Book_Tracker_UI-Book_Tracker_API.json \
+            --provider-base-url=http://localhost:3000 \
+            --provider-app-version=${{ github.sha }} \
+            --publish-verification-results \
+            --provider=BookTrackerAPI

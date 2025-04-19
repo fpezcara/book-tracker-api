@@ -69,9 +69,6 @@ group :development, :test do
   gem "factory_bot_rails"
 
   gem "faker", "~> 3.5"
-
-  gem "pact", "~> 1.66"
-  gem "pact_broker-client", "~> 1.77"
 end
 
 group :development do
@@ -83,4 +80,8 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  gem "pact", require: false
+  gem "pact-provider-verifier", require: false
+  gem "rack-test"
 end
