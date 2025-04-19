@@ -69,6 +69,9 @@ group :development, :test do
   gem "factory_bot_rails"
 
   gem "faker", "~> 3.5"
+
+  gem "pact", "~> 1.66"
+  gem "pact_broker-client", "~> 1.77"
 end
 
 group :development do

@@ -1,0 +1,47 @@
+name: Pact Provider Verification
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Setup database
+        run: |
+          cp config/database.yml.github config/database.yml
+          bundle exec rake db:setup
+
+      - name: Run Pact Provider Verification
+        env:
+          PACT_BROKER_BASE_URL: ${{ secrets.PACT_BROKER_URL }}
+          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
+        run: |
+          bundle exec pact-provider-verifier \
+            --provider-base-url http://localhost:3000 \
+            --broker-base-url $PACT_BROKER_BASE_URL \
+            --broker-token $PACT_BROKER_TOKEN \
+            --provider-version ${{ github.sha }} \
+            --publish-verification-results
