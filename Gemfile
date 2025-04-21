@@ -69,6 +69,9 @@ group :development, :test do
   gem "factory_bot_rails"
 
   gem "faker", "~> 3.5"
+
+  gem "pact", require: false
+  gem "pact-provider-verifier", require: false
 end
 
 group :development do
@@ -81,7 +84,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 
-  gem "pact", require: false
-  gem "pact-provider-verifier", require: false
   gem "rack-test"
 end

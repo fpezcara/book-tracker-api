@@ -1,17 +1,13 @@
 Pact.provider_states_for "Book_Tracker_UI" do
-  provider_state "a user is registered" do
+  provider_state "a user exists" do
     set_up do
-      User.create!(
-        email: "fake@email.com",
-        password: "fakePassword",
-        password_confirmation: "fakePassword",
-        id: 9
-      )
+      puts "=== Setting up provider state: a user exists ==="
+      user = FactoryBot.create(:user, email_address: "user@exists.com")
+      puts "Created user: #{user.inspect}"
     end
 
-    # tear_down do
-    #   # Clean up
-    #   User.destroy_all
-    # end
+    provider_state "a user does not exist" do
+      puts "=== Setting up provider state: a user does not exist ==="
+      end
   end
 end

@@ -36,9 +36,7 @@ class UsersControllerTest < ActionController::TestCase
 
     test "POST /users when user email has already been taken" do
       # create user
-      new_user = FactoryBot.build(:user, email_address: @user_params[:email_address])
-      # save in db
-      new_user.save!
+      new_user = FactoryBot.create(:user, email_address: @user_params[:email_address])
 
       post :create, params: { user: @user_params }
 

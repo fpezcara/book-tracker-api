@@ -1,4 +1,3 @@
-# require "pact/provider/rspec"
 require_relative "./providers_states_for_book_tracker.rb"
 
 Pact.service_provider "Book_Tracker_API" do
