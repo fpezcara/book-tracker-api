@@ -70,8 +70,8 @@ group :development, :test do
 
   gem "faker", "~> 3.5"
 
-  gem "pact", require: false
-  gem "pact-provider-verifier", require: false
+  gem "pact"
+  gem "pact-provider-verifier"
 end
 
 group :development do

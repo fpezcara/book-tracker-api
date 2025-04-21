@@ -31,6 +31,10 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
 
+      - name: Install dependencies
+        run: |
+          bundle install
+
       - name: Setup database
         run: |
           echo "test:
@@ -63,9 +67,4 @@ jobs:
 
       - name: Verify against downloaded pact
         run: |
-          bundle exec pact-provider-verifier \
-            pact/Book_Tracker_UI-Book_Tracker_API.json \
-            --provider-base-url=http://localhost:3000 \
-            --provider-app-version=${{ github.sha }} \
-            --publish-verification-results \
-            --provider=BookTrackerAPI
+          bundle exec rake pact:verify
