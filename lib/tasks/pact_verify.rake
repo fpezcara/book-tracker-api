@@ -1,3 +1,6 @@
+# Skip loading in production during asset precompilation
+return if ENV["SECRET_KEY_BASE_DUMMY"]
+
 require "pact/tasks"
 
 Pact.service_provider "Book_Tracker_API" do
