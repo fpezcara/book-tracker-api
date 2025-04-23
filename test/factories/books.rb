@@ -1,10 +1,10 @@
 FactoryBot.define do
   factory :book do
-    title { "The First Day of Spring" }
-    authors { [ "Nancy Tucker" ] }
+    title { Faker::Book.title }
+    authors { [ Faker::Book.author ] }
     published_date { Faker::Date.backward(days: 365) }
-    isbn { "9781453721132" }
-    page_count { 328 }
-    cover_image { "http://books.google.com/books/content?id=8drgDwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api" }
+    isbn { Faker::Book.isbn }
+    page_count { Faker::Number.between(from: 100, to: 1000) }
+    cover_image { Faker::LoremFlickr.image(size: "50x60", search_terms: ['books']) }
   end
 end
