@@ -292,7 +292,7 @@ class ListsControllerTest < ActionController::TestCase
       session[:user_id] = @user.id
 
       delete :remove_book, params: { user_id: @user.id, id: @list.id, book_id: @book.id }
-      puts "res", response.body
+
       assert_response :success
       assert_equal @list.books, []
     end
