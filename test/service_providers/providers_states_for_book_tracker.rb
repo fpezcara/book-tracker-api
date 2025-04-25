@@ -18,13 +18,12 @@ Pact.provider_states_for "Book_Tracker_UI" do
       List.destroy_all
       Book.destroy_all
 
-      user_id = "100";
-      list_id = "6e2875b7-dcec-4e63-b586-6dc071aba2c6";
+      user_id = "100"
+      list_id = "6e2875b7-dcec-4e63-b586-6dc071aba2c6"
       user = FactoryBot.create(:user, id: user_id)
       list = FactoryBot.create(:list, id: list_id, user_id: user_id)
       # to allow user to be authenticated
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
-      puts "LIST", list.inspect
     end
   end
 end

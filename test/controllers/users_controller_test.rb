@@ -47,7 +47,7 @@ class UsersControllerTest < ActionController::TestCase
     test "POST /users when valid params are passed, it creates a new user and logs the user in" do
       post :create, params: { user: @user_params }
 
-      created_user = User.last
+      created_user = User.order(:created_at).last
 
       assert_response :created
       assert_equal({ user_id: created_user.id }.to_json, response.body)

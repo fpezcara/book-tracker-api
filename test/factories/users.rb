@@ -3,6 +3,6 @@ FactoryBot.define do
     sequence(:email_address) { Faker::Internet.email  }
     password { "password" }
     password_confirmation { password }
-    id { Faker::Number.number(digits: 10).to_s }
+    id { Faker::Number.number(digits: 5).to_s }
   end
 end
