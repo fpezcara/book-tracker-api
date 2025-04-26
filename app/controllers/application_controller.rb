@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  before_action :debug_cookies
-  after_action :debug_cookies_after
+  # before_action :debug_cookies
+  # after_action :debug_cookies_after
 
   rescue_from ActionController::ParameterMissing,
              with: :rescue_from_parameter_missing
