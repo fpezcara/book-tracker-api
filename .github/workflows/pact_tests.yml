@@ -53,12 +53,12 @@ jobs:
           mkdir -p pact
 
           RELEASE_ID=$(curl -s \
-            https://api.github.com/repos/fpezcara/book-tracker-ui/releases/tags/pact-latest \
+            https://github.com/fpezcara/book-tracker-ui/releases/tags/pact-latest \
             | jq -r '.assets[] | select(.name | test("Book_Tracker_UI-Book_Tracker_API.json")) | .id')
 
           curl -L \
             -H "Accept: application/octet-stream" \
-            https://api.github.com/repos/fpezcara/book-tracker-ui/releases/assets/$RELEASE_ID \
+            https://github.com/fpezcara/book-tracker-ui/book-tracker-ui/releases/assets/$RELEASE_ID \
             -o pact/Book_Tracker_UI-Book_Tracker_API.json
 
       - name: Start Rails server
