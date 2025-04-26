@@ -7,6 +7,8 @@ on:
 
 jobs:
   verify-pact:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -48,26 +50,13 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Debug API response
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            https://api.github.com/repos/fpezcara/book-tracker-ui/releases/tag/pact-latest)
-          echo "$RESPONSE" | jq '.' || { echo "Invalid JSON response"; echo "$RESPONSE"; exit 1; }
-
-      - name: Debug API response
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            https://github.com/fpezcara/book-tracker-ui/releases/tag/pact-latest)
-          echo "$RESPONSE" | jq '.' || { echo "Invalid JSON response"; echo "$RESPONSE"; exit 1; }
-  
-
       - name: Download pact file from consumer release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # uses: dsaltares/fetch-gh-release-asset@master
+        # with:
+        #   file: Book_Tracker_UI-Book_Tracker_API.json
+        #   repo: fpezcara/book-tracker-ui
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   version: "tags/pact-latest"
         run: |
           mkdir -p pact
 
