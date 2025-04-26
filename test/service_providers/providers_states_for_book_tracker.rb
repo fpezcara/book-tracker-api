@@ -20,8 +20,11 @@ Pact.provider_states_for "Book_Tracker_UI" do
 
       user_id = "100"
       list_id = "6e2875b7-dcec-4e63-b586-6dc071aba2c6"
+      book_id = "41111ea4-91d5-4e53-be43-7b1d76d0392b"
+
       user = FactoryBot.create(:user, id: user_id)
-      list = FactoryBot.create(:list, id: list_id, user_id: user_id)
+      book = FactoryBot.create(:book, id: book_id)
+      list = FactoryBot.create(:list, id: list_id, user_id: user_id, books: [ book ])
       # to allow user to be authenticated
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
     end
