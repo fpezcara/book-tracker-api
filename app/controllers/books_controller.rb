@@ -30,7 +30,7 @@ class BooksController < ApplicationController
   # todo: this needs to return a list of books (first 10 probably)
   # https://developers.google.com/books/docs/v1/using#pagination
   def search
-    permitted_params = params[:book] ?  params.require(:book).permit(:query, :search_by): {}
+    permitted_params = params[:book] ? params.require(:book).permit(:query, :search_by): {}
     query = permitted_params[:query]
     search_by = permitted_params[:search_by]
 
