@@ -36,7 +36,7 @@ class ListsController < ApplicationController
   end
 
   def add_book
-    book = Book.find_or_create_by(book_params)
+    book = Book.find_or_create_by!(title: book_params[:title], isbn: book_params[:isbn], published_date: book_params[:published_date], page_count: book_params[:page_count], cover_image: book_params[:cover_image], authors: book_params[:authors])
 
     if @list.books.exists?(book.id)
       render json: { error: "Book is already in the list" }, status: :unprocessable_entity
