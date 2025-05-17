@@ -39,6 +39,8 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
+COPY config/prod-ca-2021.crt /rails/config/prod-ca-2021.crt
+
 # Copy application code
 COPY . .
 
