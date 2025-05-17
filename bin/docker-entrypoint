@@ -12,10 +12,15 @@ DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
 DATABASE_NAME=${DATABASE_NAME:-test_db}
 
 # If running the rails server then create or migrate existing database
+echo "DATABASE_HOST: $DATABASE_HOST"
+echo "DATABASE_PORT: $DATABASE_PORT"
+echo "DATABASE_NAME: $DATABASE_NAME"
+echo "DATABASE_USERNAME: $DATABASE_USERNAME"
+echo "DATABASE_PASSWORD: $DATABASE_PASSWORD"
+
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   echo "Migrating database..."
   ./bin/rails db:migrate RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
-
   # echo "Migrating database..."
   # ./bin/rails db:prepare || { echo 'db:migrate failed' ; exit 1; }
 
