@@ -9,6 +9,7 @@ default: &default
   sslmode: <%= ENV['DATABASE_SSLMODE'] %>
   sslrootcert: <%= ENV['DATABASE_SSLROOTCERT'] %>
   migrations_paths: db/migrate, db/cable_migrate
+  prepared_statements: false
 
 development:
   <<: *default
