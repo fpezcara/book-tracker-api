@@ -2,6 +2,7 @@
 
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
+  skip_before_action :verify_authenticity_token, only: [ :create, :update ]
   before_action :set_user_by_token, only: %i[ update ]
 
   def create
@@ -11,8 +12,10 @@ class PasswordsController < ApplicationController
     end
 
     if user = User.find_by(email_address: user_params[:email_address])
-      PasswordsMailer.reset(user).deliver_later
-      render json: { message: "Password reset instructions sent (if user with that email address exists)." }, status: :ok
+      @token = user.generate_token_for(:password_reset)
+      PasswordsMailer.reset(user, @token).deliver_later
+
+      render json: { message: "Password reset instructions sent (if user with that email address exists). Check your inbox" }, status: :ok
     else
       head :not_found
     end
@@ -20,9 +23,9 @@ class PasswordsController < ApplicationController
 
   def update
     if @user.update(password_params)
-      redirect_to passwords_path, notice: "Password has been reset successfully."
+      render json: { message: "Password has been successfully updated. Please login." }, status: :ok
     else
-      redirect_to edit_password_path(params[:token]), alert: "Passwords did not match."
+      render json: { error: "There has been an error processing your request. Please try again" }, status: :unprocessable_entity
     end
   end
 

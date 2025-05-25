@@ -2,8 +2,9 @@ require "test_helper"
 
 class PasswordsMailerTest < ActionMailer::TestCase
   test "reset email is sent" do
+    token = "test_token"
     user = FactoryBot.create(:user)
-    email = PasswordsMailer.reset(user)
+    email = PasswordsMailer.reset(user, token)
 
     assert_emails 1 do
       email.deliver_now
