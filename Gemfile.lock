@@ -163,7 +163,7 @@ GEM
     json (2.12.2)
     jsonpath (1.1.5)
       multi_json
-    kamal (2.6.1)
+    kamal (2.7.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
       bcrypt_pbkdf (~> 1.0)
@@ -233,7 +233,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
-    ostruct (0.6.1)
+    ostruct (0.6.2)
     pact (1.66.1)
       jsonpath (~> 1.0)
       pact-mock_service (~> 3.0, >= 3.3.1)
