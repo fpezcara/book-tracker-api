@@ -24,6 +24,9 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   echo "Database migration status:"
   ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
 
+  echo "Installing solid_queue..."
+  ./bin/rails solid_queue:install || { echo 'solid_queue:install failed' ; exit 1; }
+
   echo "Installing solid_cache..."
   ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
 fi
