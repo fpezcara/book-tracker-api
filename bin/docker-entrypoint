@@ -1,38 +1,59 @@
-#!/bin/bash -e
+#!/bin/bash
+set -euo pipefail
 
-# Enable jemalloc for reduced memory usage and latency.
+# jemalloc (optional)
 if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
-    export LD_PRELOAD
+  LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit || true)
+  [ -n "${LD_PRELOAD}" ] && export LD_PRELOAD
 fi
 
-DATABASE_HOST=${DATABASE_HOST:-localhost}
-DATABASE_USERNAME=${DATABASE_USERNAME:-postgres}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
-DATABASE_NAME=${DATABASE_NAME:-test_db}
+# Expect these from Render env:
+# DATABASE_HOST, DATABASE_NAME, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_SSLMODE, DATABASE_USERNAME
+DATABASE_HOST="${DATABASE_HOST:-localhost}"
+DATABASE_NAME="${DATABASE_NAME:-app}"
+DATABASE_USERNAME="${DATABASE_USERNAME:-postgres}"
+DATABASE_PASSWORD="${DATABASE_PASSWORD:-password}"
+DATABASE_PORT="${DATABASE_PORT:-5432}"
+DATABASE_SSLMODE="${DATABASE_SSLMODE:-}"
 
-
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Migrating database..."
-  ./bin/rails db:migrate RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
-  # echo "Migrating database..."
-  # ./bin/rails db:prepare || { echo 'db:migrate failed' ; exit 1; }
-
- # Check i  f Rails can connect to the database
-  # echo "Checking database connection..."
-  echo "Listing tables in the database..."
-  ./bin/rails runner "puts ActiveRecord::Base.connection.tables"
-
-  echo "Describing table: schema_migrations"
-  ./bin/rails runner "ActiveRecord::Base.connection.columns('schema_migrations').each { |c| puts \"#{c.name} - #{c.sql_type}\" }"
-
-  echo "databaseeee"
-  ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
-
-  echo "Installing solid_cache..."
-  ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
-
-  # ./bin/rails admin:create RAILS_ENV=production
+# Build DATABASE_URL if not already provided
+if [ -z "${DATABASE_URL:-}" ]; then
+  QUERY=""
+  if [ -n "$DATABASE_SSLMODE" ]; then
+    QUERY="?sslmode=${DATABASE_SSLMODE}"
+  fi
+  export DATABASE_URL="postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}${QUERY}"
 fi
 
-exec "${@}"
+# Default to production unless explicitly set
+export RAILS_ENV="${RAILS_ENV:-production}"
+
+# Only run the migration block when we’re booting the web server
+if [[ "${@: -1:1}" == "server" ]]; then
+  echo "Waiting for Postgres at ${DATABASE_HOST}:${DATABASE_PORT} ..."
+  # Use Bash's /dev/tcp so we don't need pg_isready or netcat
+  ATTEMPTS=0
+  MAX_ATTEMPTS=60
+  until (exec 3<>"/dev/tcp/${DATABASE_HOST}/${DATABASE_PORT}") 2>/dev/null; do
+    ATTEMPTS=$((ATTEMPTS+1))
+    if [ "$ATTEMPTS" -ge "$MAX_ATTEMPTS" ]; then
+      echo "ERROR: Could not reach Postgres at ${DATABASE_HOST}:${DATABASE_PORT} after ${MAX_ATTEMPTS}s"
+      exit 1
+    fi
+    echo "Database unavailable, sleeping 1s..."
+    sleep 1
+  done
+  exec 3>&- 3<&-
+
+  echo "Running Rails migrations (RAILS_ENV=${RAILS_ENV})..."
+  ./bin/rails db:migrate
+
+  echo "Migration status:"
+  ./bin/rails db:migrate:status || true
+
+  # DO NOT run interactive generators like solid_cache:install here.
+  # If you need SolidCache files, run the generator locally and commit the results.
+fi
+
+# Hand off to the actual command (e.g., ./bin/thrust ./bin/rails server)
+exec "$@"
