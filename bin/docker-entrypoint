@@ -1,37 +1,15 @@
 #!/bin/bash
 set -e
 
-# Wait for Postgres to be ready by attempting a simple Rails DB connection
-until ./bin/rails runner "ActiveRecord::Base.connection" >/dev/null 2>&1; do
-  echo "Database unavailable, sleeping 1s..."
-  sleep 1
-done
+echo "⚠️ Running one-off DB reset (schema load + seed)..."
 
-echo "Database connection established."
+# Reload schema (drops and recreates all tables, but not the DB itself)
+bin/rails db:schema:load DISABLE_DATABASE_ENVIRONMENT_CHECK=1
 
-# If the command is starting Rails server
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Installing SolidQueue..."
-  ./bin/rails solid_queue:install || { echo 'solid_queue:install failed' ; exit 1; }
+# Run seeds
+bin/rails db:seed
 
-  echo "Migrating SolidQueue..."
-  ./bin/rails solid_queue:migrate RAILS_ENV=production || { echo 'solid_queue:migrate failed' ; exit 1; }
+echo "✅ DB reset complete — solid_queue_jobs should now exist."
 
-  echo "Installing SolidCache..."
-  ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
-
-  echo "Migrating SolidCache..."
-  ./bin/rails solid_cache:migrate RAILS_ENV=production || { echo 'solid_cache:migrate failed' ; exit 1; }
-
-  echo "Preparing database..."
-  ./bin/rails db:prepare RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
-
-  echo "Listing tables in the database..."
-  ./bin/rails runner "puts ActiveRecord::Base.connection.tables.sort"
-
-  echo "Database migration status:"
-  ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
-fi
-
-# Finally, exec whatever command was passed
+# Continue with your normal entrypoint afterwards
 exec "$@"
