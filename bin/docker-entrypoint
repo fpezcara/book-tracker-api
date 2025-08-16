@@ -1,42 +1,37 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
-# Enable jemalloc for reduced memory usage and latency.
-if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
-    export LD_PRELOAD
-fi
+# Wait for Postgres to be ready by attempting a simple Rails DB connection
+until ./bin/rails runner "ActiveRecord::Base.connection" >/dev/null 2>&1; do
+  echo "Database unavailable, sleeping 1s..."
+  sleep 1
+done
 
-DATABASE_HOST=${DATABASE_HOST:-localhost}
-DATABASE_PORT=${DATABASE_PORT:-5432}
-DATABASE_USERNAME=${DATABASE_USERNAME:-postgres}
-DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
-DATABASE_NAME=${DATABASE_NAME:-test_db}
-DATABASE_SSLMODE=${DATABASE_SSLMODE:-require}
+echo "Database connection established."
 
-# Build DATABASE_URL if not already set
-if [ -z "$DATABASE_URL" ]; then
-  export DATABASE_URL="postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?sslmode=${DATABASE_SSLMODE}"
-  echo "DATABASE_URL set to $DATABASE_URL"
-fi
-
+# If the command is starting Rails server
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Migrating database..."
+  echo "Installing SolidQueue..."
+  ./bin/rails solid_queue:install || { echo 'solid_queue:install failed' ; exit 1; }
+
+  echo "Migrating SolidQueue..."
+  ./bin/rails solid_queue:migrate RAILS_ENV=production || { echo 'solid_queue:migrate failed' ; exit 1; }
+
+  echo "Installing SolidCache..."
+  ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
+
+  echo "Migrating SolidCache..."
+  ./bin/rails solid_cache:migrate RAILS_ENV=production || { echo 'solid_cache:migrate failed' ; exit 1; }
+
+  echo "Preparing database..."
   ./bin/rails db:prepare RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
 
   echo "Listing tables in the database..."
-  ./bin/rails runner "puts ActiveRecord::Base.connection.tables"
+  ./bin/rails runner "puts ActiveRecord::Base.connection.tables.sort"
 
-  echo "Describing table: schema_migrations"
-  ./bin/rails runner "ActiveRecord::Base.connection.columns('schema_migrations').each { |c| puts \"#{c.name} - #{c.sql_type}\" }"
-
-  echo "ft"
+  echo "Database migration status:"
   ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
-
-  echo "Installing solid_queue..."
-  ./bin/rails solid_queue:install || { echo 'solid_queue:install failed' ; exit 1; }
-
-  echo "Installing solid_cache..."
-  ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
 fi
 
-exec "${@}"
+# Finally, exec whatever command was passed
+exec "$@"
