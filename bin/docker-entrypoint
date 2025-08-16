@@ -13,7 +13,7 @@ DATABASE_NAME=${DATABASE_NAME:-test_db}
 
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   echo "Migrating database..."
-  ./bin/rails db:migrate RAILS_ENV=production || { echo 'db:migrate failed' ; exit 1; }
+  ./bin/rails db:prepare RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
 
   echo "Listing tables in the database..."
   ./bin/rails runner "puts ActiveRecord::Base.connection.tables"
