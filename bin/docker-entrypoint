@@ -1,15 +1,38 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
-echo "⚠️ Running one-off DB reset (schema load + seed)..."
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
 
-# Reload schema (drops and recreates all tables, but not the DB itself)
-bin/rails db:schema:load DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+DATABASE_HOST=${DATABASE_HOST:-localhost}
+DATABASE_USERNAME=${DATABASE_USERNAME:-postgres}
+DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
+DATABASE_NAME=${DATABASE_NAME:-test_db}
 
-# Run seeds
-bin/rails db:seed
 
-echo "✅ DB reset complete — solid_queue_jobs should now exist."
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  echo "Migrating database..."
+  ./bin/rails db:migrate RAILS_ENV=production || { echo 'db:prepare failed' ; exit 1; }
+  # echo "Migrating database..."
+  # ./bin/rails db:prepare || { echo 'db:migrate failed' ; exit 1; }
 
-# Continue with your normal entrypoint afterwards
-exec "$@"
+ # Check i  f Rails can connect to the database
+  # echo "Checking database connection..."
+  echo "Listing tables in the database..."
+  ./bin/rails runner "puts ActiveRecord::Base.connection.tables"
+
+  echo "Describing table: schema_migrations"
+  ./bin/rails runner "ActiveRecord::Base.connection.columns('schema_migrations').each { |c| puts \"#{c.name} - #{c.sql_type}\" }"
+
+  echo "databaseeee"
+  ./bin/rails db:migrate:status || { echo 'Database status failed' ; exit 1; }
+
+  echo "Installing solid_cache..."
+  ./bin/rails solid_cache:install || { echo 'solid_cache:install failed' ; exit 1; }
+
+  # ./bin/rails admin:create RAILS_ENV=production
+fi
+
+exec "${@}"
