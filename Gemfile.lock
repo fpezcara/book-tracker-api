@@ -163,7 +163,7 @@ GEM
     json (2.15.1)
     jsonpath (1.1.5)
       multi_json
-    kamal (2.8.0)
+    kamal (2.8.1)
       activesupport (>= 7.0)
       base64 (~> 0.2)
       bcrypt_pbkdf (~> 1.0)
