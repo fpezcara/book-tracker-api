@@ -4,14 +4,15 @@ class BooksController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :set_book, only: %i[show update destroy]
 
-  attr_accessor :book
-
   def index
     render json: Book.all
   end
 
   def create
-    @book = Book.find_by(isbn: params.require("book")["isbn"])
+    isbn = params.dig(:book, :isbn)
+    return render json: { error: "isbn missing" }, status: :bad_request unless isbn.present?
+
+    @book = Book.find_by(isbn: isbn)
 
     if @book
       render json: @book, status: :ok
@@ -27,17 +28,14 @@ class BooksController < ApplicationController
     render json: @book
   end
 
-  # todo: this needs to return a list of books (first 10 probably)
+  # TODO: this needs to return a list of books (first 10 probably)
   # https://developers.google.com/books/docs/v1/using#pagination
   def search
-    permitted_params = params[:book] ? params.require(:book).permit(:query, :search_by): {}
+    permitted_params = params.permit(:query, :search_by)
     query = permitted_params[:query]
     search_by = permitted_params[:search_by]
 
-    if query.blank? || search_by.blank?
-      render json: { error: "Missing query or search_by parameters" }, status: :bad_request
-      return
-    end
+    return render json: { error: "Missing query or search_by parameters" }, status: :bad_request if query.blank? || search_by.blank?
 
     client = GoogleBooks::Client.new
     books = client.fetch_books(query, search_by)
@@ -63,11 +61,14 @@ class BooksController < ApplicationController
   def update
     if @book.update!(book_params)
       render json: @book
+    else
+      render json: { errors: @book.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def destroy
     @book.destroy!
+    head :no_content
   end
 
   private

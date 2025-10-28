@@ -23,7 +23,8 @@ Rails.application.routes.draw do
   # root "posts#index"
   resources :books, only: %i[index create show update destroy] do
     collection do
-      post :search, to: "books#search"
+      # TODO: change to get request
+      get :search, to: "books#search"
     end
   end
 
